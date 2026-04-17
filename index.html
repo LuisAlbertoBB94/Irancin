@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos Educativos Interactivos - 5 Temas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        header h1 { font-size: 2.2em; margin-bottom: 5px; }
+        header p { font-size: 0.95em; opacity: 0.95; }
+        
+        .progress-section {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar-large {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 15px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill-large {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .score-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .score-box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .score-box h3 { color: #667eea; margin-bottom: 8px; font-size: 0.85em; }
+        .score-box .score-value { font-size: 1.8em; font-weight: bold; color: #f5576c; }
+        
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: #fff;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            background: #c0c0c0;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .game-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .game-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .question-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            font-size: 1.15em;
+            font-weight: 500;
+        }
+        
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .option-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .option-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .result-message {
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            text-align: center;
+            margin-bottom: 15px;
+            min-height: 25px;
+        }
+        
+        .result-message.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .result-message.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .counter {
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        /* Matching/Relacionar */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .matching-column h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        .matching-item {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            user-select: none;
+        }
+        
+        .matching-item:hover {
+            background: #e0e0e0;
+            transform: scale(1.02);
+        }
+        
+        .matching-item.selected {
+            border-color: #667eea;
+            background: #e7d9f7;
+        }
+        
+        .matching-item.matched {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        @media (max-width: 768px) {
+            .matching-container { grid-template-columns: 1fr; }
+            .nav-tabs { flex-direction: column; }
+            .tab-btn { width: 100%; }
+            header h1 { font-size: 1.6em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 JUEGOS EDUCATIVOS 🎓</h1>
+            <p>¡Aprende jugando con 5 temas diferentes!</p>
+        </header>
+        
+        <div class="progress-section">
+            <div class="progress-bar-large"><div class="progress-fill-large" id="global-progress"></div></div>
+            <div class="progress-text" id="progress-text">Progreso General: 0/100</div>
+        </div>
+        
+        <div class="score-boxes">
+            <div class="score-box">
+                <h3>🧮 Multiplicación</h3>
+                <div class="score-value" id="mult-score">0</div>
+            </div>
+            <div class="score-box">
+                <h3>📝 Sinónimos/Antónimos</h3>
+                <div class="score-value" id="synant-score">0</div>
+            </div>
+            <div class="score-box">
+                <h3>🇬🇧 Do y Does</h3>
+                <div class="score-value" id="do-score">0</div>
+            </div>
+            <div class="score-box">
+                <h3>📚 Palabras Compuestas</h3>
+                <div class="score-value" id="compound-score">0</div>
+            </div>
+            <div class="score-box">
+                <h3>🦁 Vertebrados/Invertebrados</h3>
+                <div class="score-value" id="animal-score">0</div>
+            </div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('mult')">🧮 Multiplicación</button>
+            <button class="tab-btn" onclick="switchTab('synant')">📝 Sinónimos</button>
+            <button class="tab-btn" onclick="switchTab('do')">🇬🇧 Do/Does</button>
+            <button class="tab-btn" onclick="switchTab('compound')">📚 Compuestas</button>
+            <button class="tab-btn" onclick="switchTab('animal')">🦁 Animales</button>
+        </div>
+        
+        <!-- MULTIPLICACIÓN -->
+        <div class="tab-content active" id="tab-mult">
+            <div class="game-card">
+                <h2>🧮 Tablas de Multiplicar</h2>
+                <div class="question-box" id="mult-question"></div>
+                <div class="options-container" id="mult-options"></div>
+                <div class="result-message" id="mult-result"></div>
+                <div class="counter" id="mult-counter"></div>
+            </div>
+        </div>
+        
+        <!-- SINÓNIMOS Y ANTÓNIMOS -->
+        <div class="tab-content" id="tab-synant">
+            <div class="game-card">
+                <h2>📝 Sinónimos y Antónimos (Opción Múltiple)</h2>
+                <div class="question-box" id="synant-question"></div>
+                <div class="options-container" id="synant-options"></div>
+                <div class="result-message" id="synant-result"></div>
+                <div class="counter" id="synant-counter"></div>
+            </div>
+        </div>
+        
+        <!-- DO Y DOES -->
+        <div class="tab-content" id="tab-do">
+            <div class="game-card">
+                <h2>🇬🇧 Do y Does en Inglés</h2>
+                <div class="question-box" id="do-question"></div>
+                <div class="options-container" id="do-options"></div>
+                <div class="result-message" id="do-result"></div>
+                <div class="counter" id="do-counter"></div>
+            </div>
+        </div>
+        
+        <!-- PALABRAS COMPUESTAS -->
+        <div class="tab-content" id="tab-compound">
+            <div class="game-card">
+                <h2>📚 Palabras Compuestas (Relacionar con Líneas)</h2>
+                <div class="question-box">Selecciona la definición correcta para cada palabra compuesta</div>
+                <div class="matching-container">
+                    <div class="matching-column">
+                        <h3>Palabras</h3>
+                        <div id="compound-left"></div>
+                    </div>
+                    <div class="matching-column">
+                        <h3>Definiciones</h3>
+                        <div id="compound-right"></div>
+                    </div>
+                </div>
+                <div class="result-message" id="compound-result"></div>
+                <div class="counter" id="compound-counter"></div>
+            </div>
+        </div>
+        
+        <!-- VERTEBRADOS E INVERTEBRADOS -->
+        <div class="tab-content" id="tab-animal">
+            <div class="game-card">
+                <h2>🦁 Vertebrados e Invertebrados</h2>
+                <div class="question-box" id="animal-question"></div>
+                <div class="options-container" id="animal-options"></div>
+                <div class="result-message" id="animal-result"></div>
+                <div class="counter" id="animal-counter"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'mult';
+        let totalAnswered = 0;
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            event.target.classList.add('active');
+            currentTab = tab;
+        }
+        
+        function updateGlobalProgress() {
+            totalAnswered++;
+            const percent = Math.min((totalAnswered / 100) * 100, 100);
+            document.getElementById('global-progress').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = `Progreso General: ${Math.min(totalAnswered, 100)}/100`;
+        }
+        
+        // ============== MULTIPLICACIÓN ==============
+        const multQuestions = [
+            {q: '2 × 3', a: 6, o: [6, 5, 7, 4]},
+            {q: '3 × 4', a: 12, o: [12, 10, 14, 11]},
+            {q: '5 × 2', a: 10, o: [10, 8, 12, 9]},
+            {q: '6 × 3', a: 18, o: [18, 16, 20, 15]},
+            {q: '4 × 5', a: 20, o: [20, 18, 22, 19]},
+            {q: '7 × 2', a: 14, o: [14, 12, 16, 13]},
+            {q: '8 × 3', a: 24, o: [24, 22, 26, 21]},
+            {q: '6 × 4', a: 24, o: [24, 22, 26, 23]},
+            {q: '9 × 2', a: 18, o: [18, 16, 20, 17]},
+            {q: '5 × 5', a: 25, o: [25, 23, 27, 24]}
+        ];
+        
+        let multScore = 0;
+        let multCount = 0;
+        
+        function startMultGame() {
+            multCount++;
+            if (multCount > multQuestions.length) multCount = 1;
+            
+            const current = multQuestions[multCount - 1];
+            document.getElementById('mult-question').textContent = '¿Cuánto es ' + current.q + '?';
+            document.getElementById('mult-options').innerHTML = '';
+            document.getElementById('mult-result').innerHTML = '';
+            document.getElementById('mult-counter').textContent = `Pregunta ${multCount}/${multQuestions.length}`;
+            
+            const options = [...current.o].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (opt === current.a) {
+                        multScore++;
+                        document.getElementById('mult-result').innerHTML = '✅ ¡Correcto!';
+                        document.getElementById('mult-result').className = 'result-message correct';
+                    } else {
+                        document.getElementById('mult-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.a;
+                        document.getElementById('mult-result').className = 'result-message incorrect';
+                    }
+                    document.getElementById('mult-score').textContent = multScore;
+                    updateGlobalProgress();
+                    
+                    Array.from(document.getElementById('mult-options').children).forEach(b => b.disabled = true);
+                    setTimeout(() => startMultGame(), 1500);
+                };
+                document.getElementById('mult-options').appendChild(btn);
+            });
+        }
+        startMultGame();
+
+        // ============== SINÓNIMOS Y ANTÓNIMOS ==============
+        const synAntQuestions = [
+            { word: 'Feliz', type: 'sinónimo', answer: 'Alegre', options: ['Alegre', 'Triste', 'Cansado', 'Asustado'] },
+            { word: 'Grande', type: 'antónimo', answer: 'Pequeño', options: ['Pequeño', 'Gigante', 'Enorme', 'Espacioso'] },
+            { word: 'Rápido', type: 'sinónimo', answer: 'Veloz', options: ['Veloz', 'Lento', 'Pausado', 'Tranquilo'] },
+            { word: 'Caliente', type: 'antónimo', answer: 'Frío', options: ['Frío', 'Tibio', 'Templado', 'Ardiente'] },
+            { word: 'Fuerte', type: 'sinónimo', answer: 'Potente', options: ['Potente', 'Débil', 'Frágil', 'Flojo'] },
+            { word: 'Limpio', type: 'antónimo', answer: 'Sucio', options: ['Sucio', 'Puro', 'Reluciente', 'Impecable'] },
+            { word: 'Amable', type: 'sinónimo', answer: 'Gentil', options: ['Gentil', 'Rudo', 'Grosero', 'Violento'] },
+            { word: 'Nuevo', type: 'antónimo', answer: 'Viejo', options: ['Viejo', 'Reciente', 'Moderno', 'Actual'] },
+            { word: 'Tranquilo', type: 'sinónimo', answer: 'Sereno', options: ['Sereno', 'Agitado', 'Nervioso', 'Inquieto'] },
+            { word: 'Alto', type: 'antónimo', answer: 'Bajo', options: ['Bajo', 'Elevado', 'Subido', 'Arriba'] }
+        ];
+        
+        let synAntScore = 0;
+        let synAntCount = 0;
+        
+        function startSynAntGame() {
+            synAntCount++;
+            if (synAntCount > synAntQuestions.length) synAntCount = 1;
+            
+            const current = synAntQuestions[synAntCount - 1];
+            document.getElementById('synant-question').textContent = `¿Cuál es el ${current.type} de "${current.word}"?`;
+            document.getElementById('synant-options').innerHTML = '';
+            document.getElementById('synant-result').innerHTML = '';
+            document.getElementById('synant-counter').textContent = `Pregunta ${synAntCount}/${synAntQuestions.length}`;
+            
+            const options = [...current.options].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (opt === current.answer) {
+                        synAntScore++;
+                        document.getElementById('synant-result').innerHTML = '✅ ¡Correcto!';
+                        document.getElementById('synant-result').className = 'result-message correct';
+                    } else {
+                        document.getElementById('synant-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.answer;
+                        document.getElementById('synant-result').className = 'result-message incorrect';
+                    }
+                    document.getElementById('synant-score').textContent = synAntScore;
+                    updateGlobalProgress();
+                    
+                    Array.from(document.getElementById('synant-options').children).forEach(b => b.disabled = true);
+                    setTimeout(() => startSynAntGame(), 1500);
+                };
+                document.getElementById('synant-options').appendChild(btn);
+            });
+        }
+        startSynAntGame();
+
+        // ============== DO Y DOES ==============
+        const doDoesQuestions = [
+            { sentence: '___ you like pizza?', answer: 'Do', options: ['Do', 'Does'] },
+            { sentence: '___ she play soccer?', answer: 'Does', options: ['Do', 'Does'] },
+            { sentence: '___ they go to school?', answer: 'Do', options: ['Do', 'Does'] },
+            { sentence: '___ he like ice cream?', answer: 'Does', options: ['Do', 'Does'] },
+            { sentence: '___ we have homework?', answer: 'Do', options: ['Do', 'Does'] },
+            { sentence: '___ you speak English?', answer: 'Do', options: ['Do', 'Does'] },
+            { sentence: '___ she love music?', answer: 'Does', options: ['Do', 'Does'] },
+            { sentence: '___ it rain today?', answer: 'Does', options: ['Do', 'Does'] },
+            { sentence: '___ they watch TV?', answer: 'Do', options: ['Do', 'Does'] },
+            { sentence: '___ John play basketball?', answer: 'Does', options: ['Do', 'Does'] }
+        ];
+        
+        let doScore = 0;
+        let doCount = 0;
+        
+        function startDoGame() {
+            doCount++;
+            if (doCount > doDoesQuestions.length) doCount = 1;
+            
+            const current = doDoesQuestions[doCount - 1];
+            document.getElementById('do-question').textContent = current.sentence;
+            document.getElementById('do-options').innerHTML = '';
+            document.getElementById('do-result').innerHTML = '';
+            document.getElementById('do-counter').textContent = `Pregunta ${doCount}/${doDoesQuestions.length}`;
+            
+            const options = [...current.options].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (opt === current.answer) {
+                        doScore++;
+                        document.getElementById('do-result').innerHTML = '✅ ¡Correcto!';
+                        document.getElementById('do-result').className = 'result-message correct';
+                    } else {
+                        document.getElementById('do-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.answer;
+                        document.getElementById('do-result').className = 'result-message incorrect';
+                    }
+                    document.getElementById('do-score').textContent = doScore;
+                    updateGlobalProgress();
+                    
+                    Array.from(document.getElementById('do-options').children).forEach(b => b.disabled = true);
+                    setTimeout(() => startDoGame(), 1500);
+                };
+                document.getElementById('do-options').appendChild(btn);
+            });
+        }
+        startDoGame();
+
+        // ============== PALABRAS COMPUESTAS (MATCHING) ==============
+        const compoundQuestions = [
+            { word: 'Paraguas', definition: 'Objeto para protegerse de la lluvia' },
+            { word: 'Sacapuntas', definition: 'Instrumento para afilar lápices' },
+            { word: 'Abrelatas', definition: 'Herramienta para abrir latas' },
+            { word: 'Paracaídas', definition: 'Dispositivo para descender lentamente' },
+            { word: 'Tocadiscos', definition: 'Aparato para reproducir música' },
+            { word: 'Lavaplatos', definition: 'Máquina para lavar platos' },
+            { word: 'Rompecabezas', definition: 'Juego de piezas para armar' },
+            { word: 'Mapamundi', definition: 'Mapa del mundo' },
+            { word: 'Matamosquitos', definition: 'Aparato para eliminar insectos' },
+            { word: 'Sacacorchos', definition: 'Instrumento para sacar corchos' }
+        ];
+        
+        let compoundScore = 0;
+        let compoundCount = 0;
+        let compoundSelected = null;
+        
+        function setupCompoundGame() {
+            compoundCount++;
+            if (compoundCount > compoundQuestions.length) compoundCount = 1;
+            
+            const current = compoundQuestions[compoundCount - 1];
+            document.getElementById('compound-left').innerHTML = '';
+            document.getElementById('compound-right').innerHTML = '';
+            document.getElementById('compound-result').innerHTML = '';
+            document.getElementById('compound-counter').textContent = `Pregunta ${compoundCount}/${compoundQuestions.length}`;
+            
+            const item1 = document.createElement('div');
+            item1.className = 'matching-item';
+            item1.textContent = current.word;
+            item1.id = 'compound-word';
+            item1.onclick = () => {
+                document.querySelectorAll('#compound-left .matching-item').forEach(el => el.classList.remove('selected'));
+                item1.classList.add('selected');
+                compoundSelected = 'word';
+            };
+            document.getElementById('compound-left').appendChild(item1);
+            
+            const definitions = compoundQuestions.map(q => q.definition).sort(() => Math.random() - 0.5);
+            definitions.forEach((def, i) => {
+                const item = document.createElement('div');
+                item.className = 'matching-item';
+                item.textContent = def;
+                item.id = 'def-' + i;
+                item.onclick = () => {
+                    if (def === current.definition) {
+                        compoundScore++;
+                        item.classList.add('matched');
+                        document.getElementById('compound-word').classList.add('matched');
+                        document.getElementById('compound-result').innerHTML = '✅ ¡Correcto!';
+                        document.getElementById('compound-result').className = 'result-message correct';
+                        document.getElementById('compound-score').textContent = compoundScore;
+                        updateGlobalProgress();
+                        
+                        setTimeout(() => setupCompoundGame(), 1500);
+                    } else {
+                        document.getElementById('compound-result').innerHTML = '❌ Intenta de nuevo';
+                        document.getElementById('compound-result').className = 'result-message incorrect';
+                    }
+                };
+                document.getElementById('compound-right').appendChild(item);
+            });
+        }
+        setupCompoundGame();
+
+        // ============== VERTEBRADOS E INVERTEBRADOS ==============
+        const animalQuestions = [
+            { animal: 'Perro', type: 'Vertebrado', image: '🐕' },
+            { animal: 'Hormiga', type: 'Invertebrado', image: '🐜' },
+            { animal: 'Pájaro', type: 'Vertebrado', image: '🐦' },
+            { animal: 'Araña', type: 'Invertebrado', image: '🕷️' },
+            { animal: 'Pez', type: 'Vertebrado', image: '🐠' },
+            { animal: 'Mariposa', type: 'Invertebrado', image: '🦋' },
+            { animal: 'Gato', type: 'Vertebrado', image: '🐱' },
+            { animal: 'Abeja', type: 'Invertebrado', image: '🐝' },
+            { animal: 'Cocodrilo', type: 'Vertebrado', image: '🐊' },
+            { animal: 'Gusano', type: 'Invertebrado', image: '🪱' }
+        ];
+        
+        let animalScore = 0;
+        let animalCount = 0;
+        
+        function startAnimalGame() {
+            animalCount++;
+            if (animalCount > animalQuestions.length) animalCount = 1;
+            
+            const current = animalQuestions[animalCount - 1];
+            document.getElementById('animal-question').textContent = `${current.image} ¿Es ${current.animal} un Vertebrado o Invertebrado?`;
+            document.getElementById('animal-options').innerHTML = '';
+            document.getElementById('animal-result').innerHTML = '';
+            document.getElementById('animal-counter').textContent = `Pregunta ${animalCount}/${animalQuestions.length}`;
+            
+            const options = ['Vertebrado', 'Invertebrado'].sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    if (opt === current.type) {
+                        animalScore++;
+                        document.getElementById('animal-result').innerHTML = '✅ ¡Correcto!';
+                        document.getElementById('animal-result').className = 'result-message correct';
+                    } else {
+                        document.getElementById('animal-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.type;
+                        document.getElementById('animal-result').className = 'result-message incorrect';
+                    }
+                    document.getElementById('animal-score').textContent = animalScore;
+                    updateGlobalProgress();
+                    
+                    Array.from(document.getElementById('animal-options').children).forEach(b => b.disabled = true);
+                    setTimeout(() => startAnimalGame(), 1500);
+                };
+                document.getElementById('animal-options').appendChild(btn);
+            });
+        }
+        startAnimalGame();
+    </script>
+</body>
+</html>
