@@ -1,655 +1,937 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juegos Educativos Interactivos - 5 Temas</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: #fff;
-            padding: 30px 20px;
-            text-align: center;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        header h1 { font-size: 2.2em; margin-bottom: 5px; }
-        header p { font-size: 0.95em; opacity: 0.95; }
-        
-        .progress-section {
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .progress-bar-large {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 15px;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-        
-        .progress-fill-large {
-            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        
-        .progress-text {
-            text-align: center;
-            color: #667eea;
-            font-weight: bold;
-        }
-        
-        .score-boxes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .score-box {
-            background: #fff;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .score-box h3 { color: #667eea; margin-bottom: 8px; font-size: 0.85em; }
-        .score-box .score-value { font-size: 1.8em; font-weight: bold; color: #f5576c; }
-        
-        .nav-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            background: #fff;
-            padding: 12px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .tab-btn {
-            background: #e0e0e0;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 0.9em;
-            flex: 1;
-            min-width: 100px;
-        }
-        
-        .tab-btn:hover {
-            transform: translateY(-2px);
-            background: #c0c0c0;
-        }
-        
-        .tab-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .game-card {
-            background: #fff;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        
-        .game-card h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-        }
-        
-        .question-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 5px solid #667eea;
-            font-size: 1.15em;
-            font-weight: 500;
-        }
-        
-        .options-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .option-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-        }
-        
-        .option-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .option-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .result-message {
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1em;
-            text-align: center;
-            margin-bottom: 15px;
-            min-height: 25px;
-        }
-        
-        .result-message.correct {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .result-message.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .counter {
-            color: #667eea;
-            font-weight: bold;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-        
-        /* Matching/Relacionar */
-        .matching-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .matching-column h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1.1em;
-        }
-        
-        .matching-item {
-            background: #f0f0f0;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 3px solid transparent;
-            user-select: none;
-        }
-        
-        .matching-item:hover {
-            background: #e0e0e0;
-            transform: scale(1.02);
-        }
-        
-        .matching-item.selected {
-            border-color: #667eea;
-            background: #e7d9f7;
-        }
-        
-        .matching-item.matched {
-            background: #d4edda;
-            border-color: #28a745;
-        }
-        
-        @media (max-width: 768px) {
-            .matching-container { grid-template-columns: 1fr; }
-            .nav-tabs { flex-direction: column; }
-            .tab-btn { width: 100%; }
-            header h1 { font-size: 1.6em; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌟 Planeta Saber – Juego Educativo 2° Primaria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== RESET & TOKENS ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --c-bg:    #0f0c29;
+      --c-card:  rgba(255,255,255,0.07);
+      --c-border:rgba(255,255,255,0.15);
+      --c-text:  #fff;
+      --c-muted: #c8baff;
+      --grad-main:  linear-gradient(135deg,#6e40e0 0%,#c850c0 100%);
+      --grad-green: linear-gradient(135deg,#11998e 0%,#38ef7d 100%);
+      --grad-gold:  linear-gradient(135deg,#f7971e 0%,#ffd200 100%);
+      --grad-red:   linear-gradient(135deg,#f7406e 0%,#e53935 100%);
+      --grad-blue:  linear-gradient(135deg,#2193b0 0%,#6dd5ed 100%);
+      --grad-purple:linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%);
+      --shadow: 0 8px 32px rgba(0,0,0,0.35);
+      --radius: 20px;
+      --transition: 0.25s cubic-bezier(.4,0,.2,1);
+    }
+
+    html { font-family: 'Nunito', sans-serif; font-size: 16px; }
+    body {
+      background: radial-gradient(ellipse at top, #302b63, #0f0c29 60%);
+      min-height: 100vh;
+      color: var(--c-text);
+      overflow-x: hidden;
+    }
+
+    /* ===== STARS BACKGROUND ===== */
+    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--d) ease-in-out infinite alternate;
+    }
+    @keyframes twinkle { from { opacity: .15; transform: scale(1); } to { opacity: .9; transform: scale(1.5); } }
+
+    /* ===== LAYOUT ===== */
+    .app { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 20px 16px 40px; }
+
+    /* ===== SCREENS ===== */
+    .screen { display: none; animation: fadeIn .4s ease; }
+    .screen.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+    /* ===== GLASSMORPHISM CARD ===== */
+    .card {
+      background: var(--c-card);
+      border: 1px solid var(--c-border);
+      backdrop-filter: blur(18px);
+      border-radius: var(--radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ===== HEADER ===== */
+    .main-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--c-border);
+      border-radius: 50px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+    .header-avatar { font-size: 2rem; line-height: 1; }
+    .header-name { font-size: 1.1rem; font-weight: 800; flex: 1; }
+    .header-stars {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--grad-gold);
+      border-radius: 50px; padding: 6px 16px;
+      font-weight: 900; font-size: 1.05rem;
+      color: #2d1a00; box-shadow: 0 4px 14px rgba(255,200,0,.35);
+    }
+
+    /* ===== WELCOME SCREEN ===== */
+    .welcome-hero {
+      text-align: center;
+      padding: 20px 0 28px;
+    }
+    .welcome-hero .planet { font-size: 6rem; animation: float 3s ease-in-out infinite; display: block; margin-bottom: 12px; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+    .welcome-hero h1 { font-size: 2.6rem; font-weight: 900; background: var(--grad-purple); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+    .welcome-hero p { color: var(--c-muted); font-size: 1.05rem; }
+
+    .form-label { display: block; font-weight: 700; margin: 18px 0 8px; color: var(--c-muted); font-size: .95rem; letter-spacing: .03em; text-transform: uppercase; }
+    .name-input {
+      width: 100%; padding: 14px 20px;
+      background: rgba(255,255,255,0.1); border: 2px solid var(--c-border);
+      border-radius: 14px; color: #fff; font-family: 'Nunito', sans-serif;
+      font-size: 1.15rem; font-weight: 700; outline: none;
+      transition: border-color var(--transition);
+    }
+    .name-input::placeholder { color: rgba(255,255,255,0.3); }
+    .name-input:focus { border-color: #c850c0; }
+
+    /* Avatar picker */
+    .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px; }
+    .avatar-option {
+      font-size: 2.4rem; text-align: center; padding: 14px 6px;
+      background: rgba(255,255,255,0.06); border: 3px solid transparent;
+      border-radius: 16px; cursor: pointer; transition: all var(--transition);
+      user-select: none;
+    }
+    .avatar-option:hover { background: rgba(255,255,255,0.14); transform: scale(1.08); }
+    .avatar-option.selected { border-color: #c850c0; background: rgba(200,80,192,0.2); transform: scale(1.12); box-shadow: 0 0 20px rgba(200,80,192,.5); }
+
+    /* Play button */
+    .btn-play {
+      display: block; width: 100%; margin-top: 28px;
+      padding: 18px; font-family: 'Nunito', sans-serif; font-size: 1.3rem; font-weight: 900;
+      background: var(--grad-main); color: #fff; border: none; border-radius: 16px;
+      cursor: pointer; box-shadow: 0 6px 24px rgba(110,64,224,.5);
+      transition: transform var(--transition), box-shadow var(--transition);
+      letter-spacing: .03em;
+    }
+    .btn-play:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 32px rgba(110,64,224,.65); }
+    .btn-play:active { transform: scale(.97); }
+
+    /* ===== HUB SCREEN ===== */
+    .hub-title { font-size: 1.5rem; font-weight: 900; margin-bottom: 20px; text-align: center; }
+    .subjects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .subject-card {
+      background: var(--c-card); border: 1px solid var(--c-border);
+      border-radius: var(--radius); padding: 20px 16px;
+      cursor: pointer; transition: all var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .subject-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+    .subject-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--grad); opacity: .12; border-radius: var(--radius);
+      transition: opacity var(--transition);
+    }
+    .subject-card:hover::before { opacity: .22; }
+    .subject-icon { font-size: 2.8rem; margin-bottom: 8px; }
+    .subject-name { font-size: 1rem; font-weight: 800; margin-bottom: 12px; }
+
+    /* mini level indicators */
+    .level-dots { display: flex; gap: 6px; }
+    .level-dot {
+      width: 28px; height: 28px; border-radius: 50%; display: flex;
+      align-items: center; justify-content: center; font-size: .75rem; font-weight: 900;
+      transition: all var(--transition);
+    }
+    .level-dot.unlocked { background: var(--grad); box-shadow: 0 3px 10px rgba(0,0,0,.3); cursor: pointer; }
+    .level-dot.locked { background: rgba(255,255,255,0.1); color: rgba(255,255,255,.3); }
+    .level-dot.done { background: var(--grad-green); }
+
+    /* 5th subject (full-width) */
+    .subjects-grid .full-width { grid-column: 1 / -1; }
+
+    /* ===== GAME SCREEN ===== */
+    .game-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+    }
+    .btn-back {
+      background: rgba(255,255,255,.1); border: none; border-radius: 12px;
+      padding: 10px 16px; color: #fff; font-family: 'Nunito',sans-serif;
+      font-size: .95rem; font-weight: 700; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .btn-back:hover { background: rgba(255,255,255,.2); }
+    .game-subject-name { font-size: 1.1rem; font-weight: 800; flex: 1; }
+    .streak-badge {
+      background: linear-gradient(135deg,#f7406e,#ff914d);
+      border-radius: 50px; padding: 6px 14px;
+      font-size: .9rem; font-weight: 900;
+      display: none;
+      animation: pulse .5s ease;
+    }
+    .streak-badge.visible { display: flex; align-items: center; gap: 4px; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+    /* progress bar */
+    .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .progress-track {
+      flex: 1; height: 10px; background: rgba(255,255,255,.12);
+      border-radius: 50px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 50px;
+      background: var(--grad-main);
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+    }
+    .progress-label { font-size: .9rem; font-weight: 700; color: var(--c-muted); white-space: nowrap; }
+
+    /* question */
+    .question-box {
+      background: rgba(255,255,255,.06); border: 1px solid var(--c-border);
+      border-radius: 16px; padding: 24px 20px;
+      font-size: 1.4rem; font-weight: 800; text-align: center;
+      margin-bottom: 22px; min-height: 90px; display: flex;
+      align-items: center; justify-content: center;
+      animation: fadeIn .35s ease;
+    }
+    .question-emoji { font-size: 3.5rem; display: block; margin-bottom: 10px; }
+
+    /* options */
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .opt-btn {
+      padding: 16px 12px; border: 2px solid var(--c-border); border-radius: 14px;
+      background: rgba(255,255,255,.07); color: #fff;
+      font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 800;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .opt-btn:hover:not(:disabled) { background: rgba(255,255,255,.18); transform: translateY(-2px); }
+    .opt-btn:disabled { cursor: not-allowed; }
+    .opt-btn.correct {
+      background: var(--grad-green); border-color: transparent;
+      animation: bumpIn .3s ease;
+    }
+    .opt-btn.wrong {
+      background: var(--grad-red); border-color: transparent;
+      animation: shake .4s ease;
+    }
+    @keyframes bumpIn { 0%{transform:scale(.95)} 60%{transform:scale(1.06)} 100%{transform:scale(1)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-8px)} 40%,80%{transform:translateX(8px)} }
+
+    .feedback-msg {
+      text-align: center; font-size: 1.1rem; font-weight: 800;
+      min-height: 36px; padding: 6px; border-radius: 10px;
+      transition: all .25s;
+    }
+    .feedback-msg.correct { color: #38ef7d; }
+    .feedback-msg.wrong   { color: #f7406e; }
+
+    /* MATCHING GAME */
+    .matching-area { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .matching-col-title { font-size: .85rem; font-weight: 800; color: var(--c-muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; text-align: center; }
+    .match-item {
+      padding: 12px 10px; border: 2px solid var(--c-border); border-radius: 12px;
+      background: rgba(255,255,255,.07); font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: all var(--transition); text-align: center;
+      margin-bottom: 8px;
+    }
+    .match-item:hover:not(.matched) { background: rgba(255,255,255,.16); border-color: #c850c0; }
+    .match-item.selected { border-color: #c850c0; background: rgba(200,80,192,.2); }
+    .match-item.matched { background: var(--grad-green); border-color: transparent; color: #fff; pointer-events: none; }
+    .match-item.wrong-flash { animation: shake .4s ease; border-color: #f7406e; }
+
+    /* ===== LEVEL COMPLETE ===== */
+    .complete-screen { text-align: center; padding: 10px 0; }
+    .complete-emoji { font-size: 5rem; animation: bounceIn .5s ease; display: block; margin-bottom: 16px; }
+    @keyframes bounceIn { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 80%{transform:scale(.95)} 100%{transform:scale(1)} }
+    .complete-title { font-size: 2.2rem; font-weight: 900; background: var(--grad-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+    .complete-subtitle { color: var(--c-muted); font-size: 1.05rem; margin-bottom: 22px; }
+    .stars-row { display: flex; justify-content: center; gap: 10px; font-size: 2.5rem; margin-bottom: 20px; }
+    .star-item { display: inline-block; animation: starPop var(--delay) ease both; }
+    @keyframes starPop { 0%{transform:scale(0)rotate(-30deg);opacity:0} 60%{transform:scale(1.2)rotate(10deg)} 100%{transform:scale(1)rotate(0);opacity:1} }
+    .points-earned {
+      display: inline-block; background: var(--grad-gold);
+      border-radius: 50px; padding: 10px 28px;
+      font-size: 1.2rem; font-weight: 900; color: #2d1a00;
+      margin-bottom: 28px; box-shadow: 0 4px 20px rgba(255,200,0,.4);
+    }
+    .complete-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-secondary {
+      padding: 14px 28px; border: 2px solid var(--c-border); border-radius: 14px;
+      background: rgba(255,255,255,.08); color: #fff;
+      font-family: 'Nunito',sans-serif; font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,.18); }
+    .btn-primary {
+      padding: 14px 28px; border: none; border-radius: 14px;
+      background: var(--grad-main); color: #fff;
+      font-family: 'Nunito',sans-serif; font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: all var(--transition);
+      box-shadow: 0 4px 20px rgba(110,64,224,.45);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(110,64,224,.6); }
+
+    /* ===== CONFETTI ===== */
+    .confetti-piece {
+      position: fixed; width: 10px; height: 10px;
+      top: -20px; border-radius: 2px;
+      animation: confettiFall var(--dur) ease-in forwards;
+      pointer-events: none; z-index: 9999;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateX(var(--dx)) translateY(110vh) rotate(var(--rot)) scale(.6); opacity: 0; }
+    }
+
+    /* ===== RESULTS SCREEN ===== */
+    .results-screen { text-align: center; }
+    .results-title { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
+    .results-subtitle { color: var(--c-muted); margin-bottom: 24px; }
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 12px; margin-bottom: 28px; }
+    .result-item {
+      background: rgba(255,255,255,.07); border: 1px solid var(--c-border);
+      border-radius: 16px; padding: 18px 12px;
+    }
+    .result-item-icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+    .result-item-name { font-size: .85rem; font-weight: 700; color: var(--c-muted); margin-bottom: 4px; }
+    .result-item-score { font-size: 1.6rem; font-weight: 900; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 520px) {
+      .subjects-grid { grid-template-columns: 1fr; }
+      .subject-card.full-width { grid-column: auto; }
+      .options-grid { grid-template-columns: 1fr; }
+      .matching-area { grid-template-columns: 1fr; }
+      .welcome-hero h1 { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎓 JUEGOS EDUCATIVOS 🎓</h1>
-            <p>¡Aprende jugando con 5 temas diferentes!</p>
-        </header>
-        
-        <div class="progress-section">
-            <div class="progress-bar-large"><div class="progress-fill-large" id="global-progress"></div></div>
-            <div class="progress-text" id="progress-text">Progreso General: 0/100</div>
-        </div>
-        
-        <div class="score-boxes">
-            <div class="score-box">
-                <h3>🧮 Multiplicación</h3>
-                <div class="score-value" id="mult-score">0</div>
-            </div>
-            <div class="score-box">
-                <h3>📝 Sinónimos/Antónimos</h3>
-                <div class="score-value" id="synant-score">0</div>
-            </div>
-            <div class="score-box">
-                <h3>🇬🇧 Do y Does</h3>
-                <div class="score-value" id="do-score">0</div>
-            </div>
-            <div class="score-box">
-                <h3>📚 Palabras Compuestas</h3>
-                <div class="score-value" id="compound-score">0</div>
-            </div>
-            <div class="score-box">
-                <h3>🦁 Vertebrados/Invertebrados</h3>
-                <div class="score-value" id="animal-score">0</div>
-            </div>
-        </div>
-        
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('mult')">🧮 Multiplicación</button>
-            <button class="tab-btn" onclick="switchTab('synant')">📝 Sinónimos</button>
-            <button class="tab-btn" onclick="switchTab('do')">🇬🇧 Do/Does</button>
-            <button class="tab-btn" onclick="switchTab('compound')">📚 Compuestas</button>
-            <button class="tab-btn" onclick="switchTab('animal')">🦁 Animales</button>
-        </div>
-        
-        <!-- MULTIPLICACIÓN -->
-        <div class="tab-content active" id="tab-mult">
-            <div class="game-card">
-                <h2>🧮 Tablas de Multiplicar</h2>
-                <div class="question-box" id="mult-question"></div>
-                <div class="options-container" id="mult-options"></div>
-                <div class="result-message" id="mult-result"></div>
-                <div class="counter" id="mult-counter"></div>
-            </div>
-        </div>
-        
-        <!-- SINÓNIMOS Y ANTÓNIMOS -->
-        <div class="tab-content" id="tab-synant">
-            <div class="game-card">
-                <h2>📝 Sinónimos y Antónimos (Opción Múltiple)</h2>
-                <div class="question-box" id="synant-question"></div>
-                <div class="options-container" id="synant-options"></div>
-                <div class="result-message" id="synant-result"></div>
-                <div class="counter" id="synant-counter"></div>
-            </div>
-        </div>
-        
-        <!-- DO Y DOES -->
-        <div class="tab-content" id="tab-do">
-            <div class="game-card">
-                <h2>🇬🇧 Do y Does en Inglés</h2>
-                <div class="question-box" id="do-question"></div>
-                <div class="options-container" id="do-options"></div>
-                <div class="result-message" id="do-result"></div>
-                <div class="counter" id="do-counter"></div>
-            </div>
-        </div>
-        
-        <!-- PALABRAS COMPUESTAS -->
-        <div class="tab-content" id="tab-compound">
-            <div class="game-card">
-                <h2>📚 Palabras Compuestas (Relacionar con Líneas)</h2>
-                <div class="question-box">Selecciona la definición correcta para cada palabra compuesta</div>
-                <div class="matching-container">
-                    <div class="matching-column">
-                        <h3>Palabras</h3>
-                        <div id="compound-left"></div>
-                    </div>
-                    <div class="matching-column">
-                        <h3>Definiciones</h3>
-                        <div id="compound-right"></div>
-                    </div>
-                </div>
-                <div class="result-message" id="compound-result"></div>
-                <div class="counter" id="compound-counter"></div>
-            </div>
-        </div>
-        
-        <!-- VERTEBRADOS E INVERTEBRADOS -->
-        <div class="tab-content" id="tab-animal">
-            <div class="game-card">
-                <h2>🦁 Vertebrados e Invertebrados</h2>
-                <div class="question-box" id="animal-question"></div>
-                <div class="options-container" id="animal-options"></div>
-                <div class="result-message" id="animal-result"></div>
-                <div class="counter" id="animal-counter"></div>
-            </div>
-        </div>
+<div class="stars" id="stars-bg"></div>
+
+<div class="app">
+
+  <!-- ======= HEADER (hidden on welcome) ======= -->
+  <div class="main-header" id="main-header" style="display:none">
+    <span class="header-avatar" id="hdr-avatar"></span>
+    <span class="header-name"  id="hdr-name"></span>
+    <div class="header-stars">⭐ <span id="hdr-stars">0</span></div>
+  </div>
+
+  <!-- ======= WELCOME SCREEN ======= -->
+  <div class="screen active" id="screen-welcome">
+    <div class="card">
+      <div class="welcome-hero">
+        <span class="planet">🪐</span>
+        <h1>Planeta Saber</h1>
+        <p>¡Aprende y diviértete al mismo tiempo!</p>
+      </div>
+
+      <label class="form-label" for="player-name">¿Cómo te llamas?</label>
+      <input class="name-input" id="player-name" type="text" maxlength="18" placeholder="Tu nombre aquí..." autocomplete="off" />
+
+      <label class="form-label">Elige tu aventurero</label>
+      <div class="avatar-grid" id="avatar-grid">
+        <div class="avatar-option" data-a="🦊" onclick="selectAvatar(this)">🦊</div>
+        <div class="avatar-option" data-a="🐸" onclick="selectAvatar(this)">🐸</div>
+        <div class="avatar-option" data-a="🦄" onclick="selectAvatar(this)">🦄</div>
+        <div class="avatar-option" data-a="🐼" onclick="selectAvatar(this)">🐼</div>
+        <div class="avatar-option" data-a="🐷" onclick="selectAvatar(this)">🐷</div>
+        <div class="avatar-option" data-a="🐯" onclick="selectAvatar(this)">🐯</div>
+        <div class="avatar-option" data-a="🦁" onclick="selectAvatar(this)">🦁</div>
+        <div class="avatar-option" data-a="🐧" onclick="selectAvatar(this)">🐧</div>
+      </div>
+
+      <button class="btn-play" onclick="startJourney()">🚀 ¡A Jugar!</button>
+    </div>
+  </div>
+
+  <!-- ======= HUB SCREEN ======= -->
+  <div class="screen" id="screen-hub">
+    <div class="hub-title">¡Elige una materia!</div>
+    <div class="subjects-grid" id="subjects-grid">
+      <!-- built by JS -->
+    </div>
+    <!-- View Results button -->
+    <div style="text-align:center;margin-top:20px">
+      <button class="btn-secondary" onclick="showResults()">📊 Ver mis resultados</button>
+      <button class="btn-secondary" style="margin-left:10px" onclick="changeProfile()">👤 Cambiar perfil</button>
+    </div>
+  </div>
+
+  <!-- ======= GAME SCREEN ======= -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <button class="btn-back" onclick="goHub()">← Atrás</button>
+      <span class="game-subject-name" id="game-subject-label"></span>
+      <div class="streak-badge" id="streak-badge">🔥 <span id="streak-num">0</span></div>
     </div>
 
-    <script>
-        let currentTab = 'mult';
-        let totalAnswered = 0;
-        
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-            event.target.classList.add('active');
-            currentTab = tab;
-        }
-        
-        function updateGlobalProgress() {
-            totalAnswered++;
-            const percent = Math.min((totalAnswered / 100) * 100, 100);
-            document.getElementById('global-progress').style.width = percent + '%';
-            document.getElementById('progress-text').textContent = `Progreso General: ${Math.min(totalAnswered, 100)}/100`;
-        }
-        
-        // ============== MULTIPLICACIÓN ==============
-        const multQuestions = [
-            {q: '2 × 3', a: 6, o: [6, 5, 7, 4]},
-            {q: '3 × 4', a: 12, o: [12, 10, 14, 11]},
-            {q: '5 × 2', a: 10, o: [10, 8, 12, 9]},
-            {q: '6 × 3', a: 18, o: [18, 16, 20, 15]},
-            {q: '4 × 5', a: 20, o: [20, 18, 22, 19]},
-            {q: '7 × 2', a: 14, o: [14, 12, 16, 13]},
-            {q: '8 × 3', a: 24, o: [24, 22, 26, 21]},
-            {q: '6 × 4', a: 24, o: [24, 22, 26, 23]},
-            {q: '9 × 2', a: 18, o: [18, 16, 20, 17]},
-            {q: '5 × 5', a: 25, o: [25, 23, 27, 24]}
-        ];
-        
-        let multScore = 0;
-        let multCount = 0;
-        
-        function startMultGame() {
-            multCount++;
-            if (multCount > multQuestions.length) multCount = 1;
-            
-            const current = multQuestions[multCount - 1];
-            document.getElementById('mult-question').textContent = '¿Cuánto es ' + current.q + '?';
-            document.getElementById('mult-options').innerHTML = '';
-            document.getElementById('mult-result').innerHTML = '';
-            document.getElementById('mult-counter').textContent = `Pregunta ${multCount}/${multQuestions.length}`;
-            
-            const options = [...current.o].sort(() => Math.random() - 0.5);
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => {
-                    if (opt === current.a) {
-                        multScore++;
-                        document.getElementById('mult-result').innerHTML = '✅ ¡Correcto!';
-                        document.getElementById('mult-result').className = 'result-message correct';
-                    } else {
-                        document.getElementById('mult-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.a;
-                        document.getElementById('mult-result').className = 'result-message incorrect';
-                    }
-                    document.getElementById('mult-score').textContent = multScore;
-                    updateGlobalProgress();
-                    
-                    Array.from(document.getElementById('mult-options').children).forEach(b => b.disabled = true);
-                    setTimeout(() => startMultGame(), 1500);
-                };
-                document.getElementById('mult-options').appendChild(btn);
-            });
-        }
-        startMultGame();
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="game-progress-fill" style="width:0%"></div></div>
+      <span class="progress-label" id="game-progress-label">0/5</span>
+    </div>
 
-        // ============== SINÓNIMOS Y ANTÓNIMOS ==============
-        const synAntQuestions = [
-            { word: 'Feliz', type: 'sinónimo', answer: 'Alegre', options: ['Alegre', 'Triste', 'Cansado', 'Asustado'] },
-            { word: 'Grande', type: 'antónimo', answer: 'Pequeño', options: ['Pequeño', 'Gigante', 'Enorme', 'Espacioso'] },
-            { word: 'Rápido', type: 'sinónimo', answer: 'Veloz', options: ['Veloz', 'Lento', 'Pausado', 'Tranquilo'] },
-            { word: 'Caliente', type: 'antónimo', answer: 'Frío', options: ['Frío', 'Tibio', 'Templado', 'Ardiente'] },
-            { word: 'Fuerte', type: 'sinónimo', answer: 'Potente', options: ['Potente', 'Débil', 'Frágil', 'Flojo'] },
-            { word: 'Limpio', type: 'antónimo', answer: 'Sucio', options: ['Sucio', 'Puro', 'Reluciente', 'Impecable'] },
-            { word: 'Amable', type: 'sinónimo', answer: 'Gentil', options: ['Gentil', 'Rudo', 'Grosero', 'Violento'] },
-            { word: 'Nuevo', type: 'antónimo', answer: 'Viejo', options: ['Viejo', 'Reciente', 'Moderno', 'Actual'] },
-            { word: 'Tranquilo', type: 'sinónimo', answer: 'Sereno', options: ['Sereno', 'Agitado', 'Nervioso', 'Inquieto'] },
-            { word: 'Alto', type: 'antónimo', answer: 'Bajo', options: ['Bajo', 'Elevado', 'Subido', 'Arriba'] }
-        ];
-        
-        let synAntScore = 0;
-        let synAntCount = 0;
-        
-        function startSynAntGame() {
-            synAntCount++;
-            if (synAntCount > synAntQuestions.length) synAntCount = 1;
-            
-            const current = synAntQuestions[synAntCount - 1];
-            document.getElementById('synant-question').textContent = `¿Cuál es el ${current.type} de "${current.word}"?`;
-            document.getElementById('synant-options').innerHTML = '';
-            document.getElementById('synant-result').innerHTML = '';
-            document.getElementById('synant-counter').textContent = `Pregunta ${synAntCount}/${synAntQuestions.length}`;
-            
-            const options = [...current.options].sort(() => Math.random() - 0.5);
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => {
-                    if (opt === current.answer) {
-                        synAntScore++;
-                        document.getElementById('synant-result').innerHTML = '✅ ¡Correcto!';
-                        document.getElementById('synant-result').className = 'result-message correct';
-                    } else {
-                        document.getElementById('synant-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.answer;
-                        document.getElementById('synant-result').className = 'result-message incorrect';
-                    }
-                    document.getElementById('synant-score').textContent = synAntScore;
-                    updateGlobalProgress();
-                    
-                    Array.from(document.getElementById('synant-options').children).forEach(b => b.disabled = true);
-                    setTimeout(() => startSynAntGame(), 1500);
-                };
-                document.getElementById('synant-options').appendChild(btn);
-            });
-        }
-        startSynAntGame();
+    <!-- multiple choice -->
+    <div id="mc-area">
+      <div class="question-box" id="question-text"></div>
+      <div class="options-grid" id="options-grid"></div>
+    </div>
 
-        // ============== DO Y DOES ==============
-        const doDoesQuestions = [
-            { sentence: '___ you like pizza?', answer: 'Do', options: ['Do', 'Does'] },
-            { sentence: '___ she play soccer?', answer: 'Does', options: ['Do', 'Does'] },
-            { sentence: '___ they go to school?', answer: 'Do', options: ['Do', 'Does'] },
-            { sentence: '___ he like ice cream?', answer: 'Does', options: ['Do', 'Does'] },
-            { sentence: '___ we have homework?', answer: 'Do', options: ['Do', 'Does'] },
-            { sentence: '___ you speak English?', answer: 'Do', options: ['Do', 'Does'] },
-            { sentence: '___ she love music?', answer: 'Does', options: ['Do', 'Does'] },
-            { sentence: '___ it rain today?', answer: 'Does', options: ['Do', 'Does'] },
-            { sentence: '___ they watch TV?', answer: 'Do', options: ['Do', 'Does'] },
-            { sentence: '___ John play basketball?', answer: 'Does', options: ['Do', 'Does'] }
-        ];
-        
-        let doScore = 0;
-        let doCount = 0;
-        
-        function startDoGame() {
-            doCount++;
-            if (doCount > doDoesQuestions.length) doCount = 1;
-            
-            const current = doDoesQuestions[doCount - 1];
-            document.getElementById('do-question').textContent = current.sentence;
-            document.getElementById('do-options').innerHTML = '';
-            document.getElementById('do-result').innerHTML = '';
-            document.getElementById('do-counter').textContent = `Pregunta ${doCount}/${doDoesQuestions.length}`;
-            
-            const options = [...current.options].sort(() => Math.random() - 0.5);
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => {
-                    if (opt === current.answer) {
-                        doScore++;
-                        document.getElementById('do-result').innerHTML = '✅ ¡Correcto!';
-                        document.getElementById('do-result').className = 'result-message correct';
-                    } else {
-                        document.getElementById('do-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.answer;
-                        document.getElementById('do-result').className = 'result-message incorrect';
-                    }
-                    document.getElementById('do-score').textContent = doScore;
-                    updateGlobalProgress();
-                    
-                    Array.from(document.getElementById('do-options').children).forEach(b => b.disabled = true);
-                    setTimeout(() => startDoGame(), 1500);
-                };
-                document.getElementById('do-options').appendChild(btn);
-            });
-        }
-        startDoGame();
+    <!-- matching (words compuestas) -->
+    <div id="match-area" style="display:none">
+      <div class="question-box" style="font-size:1.1rem">Une cada palabra con su significado haciendo clic primero en la palabra y luego en la definición.</div>
+      <div class="matching-area" id="matching-area"></div>
+    </div>
 
-        // ============== PALABRAS COMPUESTAS (MATCHING) ==============
-        const compoundQuestions = [
-            { word: 'Paraguas', definition: 'Objeto para protegerse de la lluvia' },
-            { word: 'Sacapuntas', definition: 'Instrumento para afilar lápices' },
-            { word: 'Abrelatas', definition: 'Herramienta para abrir latas' },
-            { word: 'Paracaídas', definition: 'Dispositivo para descender lentamente' },
-            { word: 'Tocadiscos', definition: 'Aparato para reproducir música' },
-            { word: 'Lavaplatos', definition: 'Máquina para lavar platos' },
-            { word: 'Rompecabezas', definition: 'Juego de piezas para armar' },
-            { word: 'Mapamundi', definition: 'Mapa del mundo' },
-            { word: 'Matamosquitos', definition: 'Aparato para eliminar insectos' },
-            { word: 'Sacacorchos', definition: 'Instrumento para sacar corchos' }
-        ];
-        
-        let compoundScore = 0;
-        let compoundCount = 0;
-        let compoundSelected = null;
-        
-        function setupCompoundGame() {
-            compoundCount++;
-            if (compoundCount > compoundQuestions.length) compoundCount = 1;
-            
-            const current = compoundQuestions[compoundCount - 1];
-            document.getElementById('compound-left').innerHTML = '';
-            document.getElementById('compound-right').innerHTML = '';
-            document.getElementById('compound-result').innerHTML = '';
-            document.getElementById('compound-counter').textContent = `Pregunta ${compoundCount}/${compoundQuestions.length}`;
-            
-            const item1 = document.createElement('div');
-            item1.className = 'matching-item';
-            item1.textContent = current.word;
-            item1.id = 'compound-word';
-            item1.onclick = () => {
-                document.querySelectorAll('#compound-left .matching-item').forEach(el => el.classList.remove('selected'));
-                item1.classList.add('selected');
-                compoundSelected = 'word';
-            };
-            document.getElementById('compound-left').appendChild(item1);
-            
-            const definitions = compoundQuestions.map(q => q.definition).sort(() => Math.random() - 0.5);
-            definitions.forEach((def, i) => {
-                const item = document.createElement('div');
-                item.className = 'matching-item';
-                item.textContent = def;
-                item.id = 'def-' + i;
-                item.onclick = () => {
-                    if (def === current.definition) {
-                        compoundScore++;
-                        item.classList.add('matched');
-                        document.getElementById('compound-word').classList.add('matched');
-                        document.getElementById('compound-result').innerHTML = '✅ ¡Correcto!';
-                        document.getElementById('compound-result').className = 'result-message correct';
-                        document.getElementById('compound-score').textContent = compoundScore;
-                        updateGlobalProgress();
-                        
-                        setTimeout(() => setupCompoundGame(), 1500);
-                    } else {
-                        document.getElementById('compound-result').innerHTML = '❌ Intenta de nuevo';
-                        document.getElementById('compound-result').className = 'result-message incorrect';
-                    }
-                };
-                document.getElementById('compound-right').appendChild(item);
-            });
-        }
-        setupCompoundGame();
+    <div class="feedback-msg" id="feedback-msg"></div>
+  </div>
 
-        // ============== VERTEBRADOS E INVERTEBRADOS ==============
-        const animalQuestions = [
-            { animal: 'Perro', type: 'Vertebrado', image: '🐕' },
-            { animal: 'Hormiga', type: 'Invertebrado', image: '🐜' },
-            { animal: 'Pájaro', type: 'Vertebrado', image: '🐦' },
-            { animal: 'Araña', type: 'Invertebrado', image: '🕷️' },
-            { animal: 'Pez', type: 'Vertebrado', image: '🐠' },
-            { animal: 'Mariposa', type: 'Invertebrado', image: '🦋' },
-            { animal: 'Gato', type: 'Vertebrado', image: '🐱' },
-            { animal: 'Abeja', type: 'Invertebrado', image: '🐝' },
-            { animal: 'Cocodrilo', type: 'Vertebrado', image: '🐊' },
-            { animal: 'Gusano', type: 'Invertebrado', image: '🪱' }
-        ];
-        
-        let animalScore = 0;
-        let animalCount = 0;
-        
-        function startAnimalGame() {
-            animalCount++;
-            if (animalCount > animalQuestions.length) animalCount = 1;
-            
-            const current = animalQuestions[animalCount - 1];
-            document.getElementById('animal-question').textContent = `${current.image} ¿Es ${current.animal} un Vertebrado o Invertebrado?`;
-            document.getElementById('animal-options').innerHTML = '';
-            document.getElementById('animal-result').innerHTML = '';
-            document.getElementById('animal-counter').textContent = `Pregunta ${animalCount}/${animalQuestions.length}`;
-            
-            const options = ['Vertebrado', 'Invertebrado'].sort(() => Math.random() - 0.5);
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => {
-                    if (opt === current.type) {
-                        animalScore++;
-                        document.getElementById('animal-result').innerHTML = '✅ ¡Correcto!';
-                        document.getElementById('animal-result').className = 'result-message correct';
-                    } else {
-                        document.getElementById('animal-result').innerHTML = '❌ Incorrecto. La respuesta es ' + current.type;
-                        document.getElementById('animal-result').className = 'result-message incorrect';
-                    }
-                    document.getElementById('animal-score').textContent = animalScore;
-                    updateGlobalProgress();
-                    
-                    Array.from(document.getElementById('animal-options').children).forEach(b => b.disabled = true);
-                    setTimeout(() => startAnimalGame(), 1500);
-                };
-                document.getElementById('animal-options').appendChild(btn);
-            });
-        }
-        startAnimalGame();
-    </script>
+  <!-- ======= LEVEL COMPLETE ======= -->
+  <div class="screen" id="screen-complete">
+    <div class="card complete-screen">
+      <span class="complete-emoji" id="complete-emoji">🎉</span>
+      <div class="complete-title" id="complete-title">¡Nivel Completo!</div>
+      <div class="complete-subtitle" id="complete-subtitle"></div>
+      <div class="stars-row" id="complete-stars"></div>
+      <div class="points-earned" id="points-earned"></div>
+      <div class="complete-btns">
+        <button class="btn-secondary" onclick="goHub()">🗺️ Mapa</button>
+        <button class="btn-primary" id="btn-next-level" onclick="nextLevel()">Siguiente Nivel ➜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= RESULTS SCREEN ======= -->
+  <div class="screen" id="screen-results">
+    <div class="card results-screen">
+      <div class="results-title">📊 Mis Resultados</div>
+      <div class="results-subtitle" id="results-subtitle"></div>
+      <div class="results-grid" id="results-grid"></div>
+      <button class="btn-primary" onclick="goHub()">🏠 Volver al Mapa</button>
+    </div>
+  </div>
+
+</div><!-- end .app -->
+
+<script>
+/* ===========================
+   STARS BACKGROUND
+=========================== */
+(function(){
+  const c = document.getElementById('stars-bg');
+  for(let i=0;i<80;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const size = Math.random()*2.5+1;
+    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*3+1.5).toFixed(1)}s`;
+    c.appendChild(s);
+  }
+})();
+
+/* ===========================
+   DATA
+=========================== */
+const SUBJECTS = [
+  {
+    id:'mult', name:'Tablas de Multiplicar', icon:'🧮', grad:'linear-gradient(135deg,#667eea,#764ba2)',
+    type:'mc',
+    levels:[
+      { name:'Fácil 🟢', q:[
+          {q:'¿Cuánto es 2 × 2?', a:'4', o:['4','3','6','5']},
+          {q:'¿Cuánto es 5 × 1?', a:'5', o:['5','4','6','10']},
+          {q:'¿Cuánto es 2 × 5?', a:'10', o:['10','8','12','9']},
+          {q:'¿Cuánto es 5 × 2?', a:'10', o:['10','7','12','8']},
+          {q:'¿Cuánto es 2 × 3?', a:'6', o:['6','5','7','4']},
+        ]},
+      { name:'Medio 🟡', q:[
+          {q:'¿Cuánto es 3 × 4?', a:'12', o:['12','10','14','11']},
+          {q:'¿Cuánto es 4 × 5?', a:'20', o:['20','18','22','19']},
+          {q:'¿Cuánto es 3 × 3?', a:'9', o:['9','6','12','8']},
+          {q:'¿Cuánto es 4 × 4?', a:'16', o:['16','14','18','15']},
+          {q:'¿Cuánto es 5 × 5?', a:'25', o:['25','20','30','24']},
+        ]},
+      { name:'Difícil 🔴', q:[
+          {q:'¿Cuánto es 6 × 7?', a:'42', o:['42','36','48','45']},
+          {q:'¿Cuánto es 8 × 9?', a:'72', o:['72','63','81','70']},
+          {q:'¿Cuánto es 7 × 7?', a:'49', o:['49','42','56','48']},
+          {q:'¿Cuánto es 9 × 6?', a:'54', o:['54','48','63','52']},
+          {q:'¿Cuánto es 8 × 8?', a:'64', o:['64','56','72','63']},
+        ]},
+    ]
+  },
+  {
+    id:'synant', name:'Sinónimos y Antónimos', icon:'📝', grad:'linear-gradient(135deg,#11998e,#38ef7d)',
+    type:'mc',
+    levels:[
+      { name:'Fácil 🟢', q:[
+          {q:'¿Cuál es el SINÓNIMO de "Feliz"?', a:'Alegre', o:['Alegre','Triste','Cansado','Asustado']},
+          {q:'¿Cuál es el ANTÓNIMO de "Grande"?', a:'Pequeño', o:['Pequeño','Gigante','Enorme','Espacioso']},
+          {q:'¿Cuál es el SINÓNIMO de "Rápido"?', a:'Veloz', o:['Veloz','Lento','Pausado','Tranquilo']},
+          {q:'¿Cuál es el ANTÓNIMO de "Caliente"?', a:'Frío', o:['Frío','Tibio','Templado','Ardiente']},
+          {q:'¿Cuál es el SINÓNIMO de "Fuerte"?', a:'Potente', o:['Potente','Débil','Frágil','Flojo']},
+        ]},
+      { name:'Medio 🟡', q:[
+          {q:'¿Cuál es el ANTÓNIMO de "Limpio"?', a:'Sucio', o:['Sucio','Puro','Reluciente','Impecable']},
+          {q:'¿Cuál es el SINÓNIMO de "Amable"?', a:'Gentil', o:['Gentil','Rudo','Grosero','Violento']},
+          {q:'¿Cuál es el ANTÓNIMO de "Nuevo"?', a:'Viejo', o:['Viejo','Reciente','Moderno','Actual']},
+          {q:'¿Cuál es el SINÓNIMO de "Tranquilo"?', a:'Sereno', o:['Sereno','Agitado','Nervioso','Inquieto']},
+          {q:'¿Cuál es el ANTÓNIMO de "Alto"?', a:'Bajo', o:['Bajo','Elevado','Subido','Arriba']},
+        ]},
+      { name:'Difícil 🔴', q:[
+          {q:'¿Cuál es el SINÓNIMO de "Valiente"?', a:'Audaz', o:['Audaz','Cobarde','Miedoso','Tímido']},
+          {q:'¿Cuál es el ANTÓNIMO de "Abundante"?', a:'Escaso', o:['Escaso','Mucho','Copioso','Rico']},
+          {q:'¿Cuál es el SINÓNIMO de "Oscuro"?', a:'Sombrío', o:['Sombrío','Brillante','Claro','Luminoso']},
+          {q:'¿Cuál es el ANTÓNIMO de "Áspero"?', a:'Suave', o:['Suave','Rugoso','Duro','Rígido']},
+          {q:'¿Cuál es el SINÓNIMO de "Hermoso"?', a:'Bello', o:['Bello','Feo','Horrible','Grotesco']},
+        ]},
+    ]
+  },
+  {
+    id:'do', name:'Do y Does (Inglés)', icon:'🇬🇧', grad:'linear-gradient(135deg,#c94b4b,#4b134f)',
+    type:'mc',
+    levels:[
+      { name:'Fácil 🟢', q:[
+          {q:'___ you like pizza?', a:'Do', o:['Do','Does']},
+          {q:'___ she play soccer?', a:'Does', o:['Do','Does']},
+          {q:'___ they go to school?', a:'Do', o:['Do','Does']},
+          {q:'___ he like ice cream?', a:'Does', o:['Do','Does']},
+          {q:'___ we have homework?', a:'Do', o:['Do','Does']},
+        ]},
+      { name:'Medio 🟡', q:[
+          {q:'___ you speak English?', a:'Do', o:['Do','Does']},
+          {q:'___ she love music?', a:'Does', o:['Do','Does']},
+          {q:'___ it rain today?', a:'Does', o:['Do','Does']},
+          {q:'___ they watch TV?', a:'Do', o:['Do','Does']},
+          {q:'___ John play basketball?', a:'Does', o:['Do','Does']},
+        ]},
+      { name:'Difícil 🔴', q:[
+          {q:'___ Maria and Carlos study together?', a:'Do', o:['Do','Does']},
+          {q:'___ the cat sleep a lot?', a:'Does', o:['Do','Does']},
+          {q:'___ you and your brother play outside?', a:'Do', o:['Do','Does']},
+          {q:'___ the teacher explain well?', a:'Does', o:['Do','Does']},
+          {q:'___ birds fly south in winter?', a:'Do', o:['Do','Does']},
+        ]},
+    ]
+  },
+  {
+    id:'compound', name:'Palabras Compuestas', icon:'📚', grad:'linear-gradient(135deg,#f7971e,#ffd200)',
+    type:'mc',
+    levels:[
+      { name:'Fácil 🟢', q:[
+          {q:'¿Qué es un "paraguas"?', a:'Para protegerse de la lluvia', o:['Para protegerse de la lluvia','Para abrir latas','Para afilar lápices','Para cocinar']},
+          {q:'¿Qué es un "sacapuntas"?', a:'Para afilar lápices', o:['Para afilar lápices','Para sacar dientes','Para lavar platos','Para volar']},
+          {q:'¿Qué es un "abrelatas"?', a:'Para abrir latas', o:['Para abrir latas','Para abrir puertas','Para abrir ventanas','Para leer']},
+          {q:'¿Qué es un "lavaplatos"?', a:'Para lavar platos', o:['Para lavar platos','Para lavar ropa','Para lavar carros','Para lavar perros']},
+          {q:'¿Qué es un "rompecabezas"?', a:'Juego de piezas para armar', o:['Juego de piezas para armar','Un deporte','Un instrumento','Una fruta']},
+        ]},
+      { name:'Medio 🟡', q:[
+          {q:'¿Qué es un "paracaídas"?', a:'Para descender lentamente del cielo', o:['Para descender lentamente del cielo','Para subir montañas','Para nadar bajo el agua','Para cocinar']},
+          {q:'¿Qué es un "mapamundi"?', a:'Mapa de todo el mundo', o:['Mapa de todo el mundo','Mapa de una ciudad','Mapa de tu escuela','Mapa de tu casa']},
+          {q:'¿Qué es un "sacacorchos"?', a:'Para sacar corchos de botellas', o:['Para sacar corchos de botellas','Para sacar muela','Para sacar basura','Para plantar árboles']},
+          {q:'¿Qué es "matamosquitos"?', a:'Para eliminar insectos voladores', o:['Para eliminar insectos voladores','Para eliminar gérmenes','Para eliminar el polvo','Para eliminar manchas']},
+          {q:'¿Qué es "limpiaparabrisas"?', a:'Para limpiar el vidrio del carro', o:['Para limpiar el vidrio del carro','Para limpiar la ropa','Para limpiar los dientes','Para limpiar el piso']},
+        ]},
+      { name:'Difícil 🔴', q:[
+          {q:'"Guardabosques" es alguien que...', a:'Cuida y protege los bosques', o:['Cuida y protege los bosques','Vende árboles','Tala madera','Pinta cuadros']},
+          {q:'"Saltamontes" es un insecto que...', a:'Salta mucho entre el pasto', o:['Salta mucho entre el pasto','Nada en el río','Vuela muy alto','Vive en la arena']},
+          {q:'"Tocadiscos" sirve para...', a:'Reproducir música en discos', o:['Reproducir música en discos','Tocar el piano','Grabar canciones','Ver películas']},
+          {q:'"Cortacésped" sirve para...', a:'Cortar el pasto del jardín', o:['Cortar el pasto del jardín','Cortar el cabello','Cortar madera','Cortar papel']},
+          {q:'"Cuentagotas" sirve para...', a:'Soltar líquido gota a gota', o:['Soltar líquido gota a gota','Contar personas','Medir distancias','Hervir agua']},
+        ]},
+    ]
+  },
+  {
+    id:'animals', name:'Vertebrados e Invertebrados', icon:'🦁', grad:'linear-gradient(135deg,#2193b0,#6dd5ed)',
+    type:'mc',
+    levels:[
+      { name:'Fácil 🟢', q:[
+          {q:'🐕 ¿El Perro es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐜 ¿La Hormiga es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐦 ¿El Pájaro es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🕷️ ¿La Araña es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐠 ¿El Pez es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+        ]},
+      { name:'Medio 🟡', q:[
+          {q:'🦋 ¿La Mariposa es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐱 ¿El Gato es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐝 ¿La Abeja es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐊 ¿El Cocodrilo es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🪱 ¿El Gusano es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+        ]},
+      { name:'Difícil 🔴', q:[
+          {q:'🐙 ¿El Pulpo es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐸 ¿La Rana es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🦀 ¿El Cangrejo es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🐍 ¿La Serpiente es...?', a:'Vertebrado', o:['Vertebrado','Invertebrado']},
+          {q:'🦑 ¿El Calamar es...?', a:'Invertebrado', o:['Vertebrado','Invertebrado']},
+        ]},
+    ]
+  },
+];
+
+/* ===========================
+   STATE
+=========================== */
+let player = { name:'', avatar:'🦊', stars:0 };
+let progress = {}; // { subjectId: { level: 0=locked/1=unlocked/2=done per level, scores:[]} }
+let game = {};    // active game state
+
+function saveState() {
+  localStorage.setItem('ps_player', JSON.stringify(player));
+  localStorage.setItem('ps_progress', JSON.stringify(progress));
+}
+function loadState() {
+  try {
+    const p = localStorage.getItem('ps_player');
+    const r = localStorage.getItem('ps_progress');
+    if(p) player = JSON.parse(p);
+    if(r) progress = JSON.parse(r);
+  } catch(e) { }
+}
+function initProgress() {
+  SUBJECTS.forEach(s => {
+    if(!progress[s.id]) {
+      progress[s.id] = { levels: s.levels.map((_,i)=> i===0 ? 'unlocked' : 'locked'), scores: s.levels.map(()=>0) };
+    }
+  });
+}
+
+/* ===========================
+   WELCOME
+=========================== */
+let selectedAvatar = '🦊';
+
+function selectAvatar(el) {
+  document.querySelectorAll('.avatar-option').forEach(a=>a.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedAvatar = el.dataset.a;
+}
+
+function startJourney() {
+  const name = document.getElementById('player-name').value.trim();
+  if(!name) { document.getElementById('player-name').focus(); shakeEl(document.getElementById('player-name')); return; }
+  player.name = name;
+  player.avatar = selectedAvatar;
+  if(!player.stars) player.stars = 0;
+  saveState();
+  initProgress();
+  showHub();
+}
+
+function changeProfile() {
+  showScreen('screen-welcome');
+  document.getElementById('main-header').style.display='none';
+  document.getElementById('player-name').value = player.name;
+  // re-select avatar
+  document.querySelectorAll('.avatar-option').forEach(a=>{
+    if(a.dataset.a===player.avatar) { a.classList.add('selected'); selectedAvatar=player.avatar; }
+    else a.classList.remove('selected');
+  });
+}
+
+/* ===========================
+   HUB
+=========================== */
+function showHub() {
+  updateHeader();
+  buildHub();
+  showScreen('screen-hub');
+}
+
+function updateHeader() {
+  document.getElementById('main-header').style.display='flex';
+  document.getElementById('hdr-avatar').textContent = player.avatar;
+  document.getElementById('hdr-name').textContent = player.name;
+  document.getElementById('hdr-stars').textContent = player.stars;
+}
+
+function buildHub() {
+  const grid = document.getElementById('subjects-grid');
+  grid.innerHTML='';
+  SUBJECTS.forEach((s,si) => {
+    const prog = progress[s.id];
+    const card = document.createElement('div');
+    card.className = 'subject-card' + (si===4?' full-width':'');
+    card.style.setProperty('--grad', s.grad);
+
+    const dots = s.levels.map((lv,li)=>{
+      const st = prog.levels[li];
+      const cls = st==='done'?'done': st==='unlocked'?'unlocked':'locked';
+      const lbl = li===0?'1': li===1?'2':'3';
+      const click = st==='locked'?'':`onclick="startGame('${s.id}',${li})"`;
+      const lock = st==='locked'?'🔒':lbl;
+      return `<div class="level-dot ${cls}" title="${lv.name}" ${click}>${lock}</div>`;
+    }).join('');
+
+    card.innerHTML=`
+      <div class="subject-icon">${s.icon}</div>
+      <div class="subject-name">${s.name}</div>
+      <div class="level-dots">${dots}</div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ===========================
+   GAME ENGINE
+=========================== */
+function startGame(subjectId, levelIdx) {
+  const sub = SUBJECTS.find(s=>s.id===subjectId);
+  const level = sub.levels[levelIdx];
+  game = {
+    subjectId, levelIdx,
+    questions: shuffle([...level.q]),
+    current: 0,
+    correct: 0,
+    streak: 0,
+    sub, level,
+    // matching state
+    matchSelected: null,
+    matchDone: 0,
+  };
+  document.getElementById('game-subject-label').textContent = `${sub.icon} ${sub.name} · ${level.name}`;
+  updateStreak();
+  setProgress(0);
+
+  if(sub.type==='match') {
+    document.getElementById('mc-area').style.display='none';
+    document.getElementById('match-area').style.display='block';
+    renderMatch();
+  } else {
+    document.getElementById('mc-area').style.display='block';
+    document.getElementById('match-area').style.display='none';
+    renderQuestion();
+  }
+  document.getElementById('feedback-msg').textContent='';
+  document.getElementById('feedback-msg').className='feedback-msg';
+  showScreen('screen-game');
+}
+
+function renderQuestion() {
+  const q = game.questions[game.current];
+  const box = document.getElementById('question-text');
+  box.innerHTML = q.q;
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML='';
+  const opts = shuffle([...q.o]);
+
+  // 2-column if 4 opts, 1-col if 2 opts
+  grid.style.gridTemplateColumns = opts.length<=2 ? '1fr 1fr' : '1fr 1fr';
+
+  opts.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className='opt-btn';
+    btn.textContent=opt;
+    btn.onclick=()=>checkAnswer(btn, opt, q.a, grid);
+    grid.appendChild(btn);
+  });
+  setProgress(game.current);
+}
+
+function checkAnswer(btn, chosen, correct, grid) {
+  const fb = document.getElementById('feedback-msg');
+  Array.from(grid.children).forEach(b=>b.disabled=true);
+
+  if(chosen===correct){
+    btn.classList.add('correct');
+    game.correct++;
+    game.streak++;
+    updateStreak();
+    fb.textContent='✅ ¡Muy bien!';
+    fb.className='feedback-msg correct';
+    addStars(10);
+    if(game.streak===3) { addStars(5); popMessage('🔥 +5 bonus de racha!'); }
+    if(game.streak===5) { addStars(15); popMessage('🔥🔥 +15 mega racha!'); }
+  } else {
+    btn.classList.add('wrong');
+    // show correct
+    Array.from(grid.children).forEach(b=>{ if(b.textContent===correct) b.classList.add('correct'); });
+    game.streak=0;
+    updateStreak();
+    fb.textContent=`💡 La respuesta era: ${correct}`;
+    fb.className='feedback-msg wrong';
+  }
+
+  game.current++;
+  if(game.current>=game.questions.length){
+    setTimeout(()=>finishLevel(), 1400);
+  } else {
+    setTimeout(()=>{
+      fb.textContent=''; fb.className='feedback-msg';
+      renderQuestion();
+    }, 1300);
+  }
+}
+
+function updateStreak() {
+  const badge = document.getElementById('streak-badge');
+  if(game.streak>=3){
+    badge.classList.add('visible');
+    document.getElementById('streak-num').textContent=game.streak;
+  } else {
+    badge.classList.remove('visible');
+  }
+}
+
+function setProgress(current) {
+  const total = game.questions.length;
+  const pct = (current/total)*100;
+  document.getElementById('game-progress-fill').style.width=pct+'%';
+  document.getElementById('game-progress-label').textContent=`${current}/${total}`;
+}
+
+/* ===========================
+   LEVEL COMPLETE
+=========================== */
+function finishLevel() {
+  const total = game.questions.length;
+  const correct = game.correct;
+  const ratio = correct/total;
+  const bonus = correct===total?20:0;
+  if(bonus) { addStars(bonus); }
+
+  // update progress
+  const prog = progress[game.subjectId];
+  prog.scores[game.levelIdx] = Math.max(prog.scores[game.levelIdx], correct);
+  prog.levels[game.levelIdx]='done';
+  // unlock next
+  if(game.levelIdx+1 < game.sub.levels.length) {
+    prog.levels[game.levelIdx+1]='unlocked';
+  }
+  saveState();
+
+  // stars display
+  const starsFull = Math.round(ratio*5);
+  const starsHTML = [1,2,3,4,5].map((i,idx)=>{
+    const filled = i<=starsFull ? '⭐' : '☆';
+    const delay = (idx*.15).toFixed(2)+'s';
+    return `<span class="star-item" style="--delay:${delay} animation-delay:${delay}">${filled}</span>`;
+  }).join('');
+
+  const totalPts = correct*10 + bonus;
+  document.getElementById('complete-emoji').textContent= ratio===1?'🏆': ratio>=.6?'🎉':'💪';
+  document.getElementById('complete-title').textContent= ratio===1?'¡Perfecto!': ratio>=.6?'¡Nivel Completado!':'¡Buen intento!';
+  document.getElementById('complete-subtitle').textContent=`Respondiste ${correct} de ${total} correctamente`;
+  document.getElementById('complete-stars').innerHTML=starsHTML;
+  document.getElementById('points-earned').textContent=`+${totalPts} ⭐ ganadas${bonus?` (¡+${bonus} bonus perfecto!)`:``}`;
+
+  const hasNext = game.levelIdx+1 < game.sub.levels.length;
+  document.getElementById('btn-next-level').style.display=hasNext?'inline-block':'none';
+
+  showScreen('screen-complete');
+  if(ratio>=0.6) confetti();
+  updateHeader();
+}
+
+function nextLevel() {
+  const nextIdx = game.levelIdx+1;
+  if(nextIdx < game.sub.levels.length) {
+    startGame(game.subjectId, nextIdx);
+  } else {
+    goHub();
+  }
+}
+
+function goHub() { showHub(); }
+
+/* ===========================
+   RESULTS
+=========================== */
+function showResults() {
+  const grid = document.getElementById('results-grid');
+  grid.innerHTML='';
+  let total=0, max=0;
+  SUBJECTS.forEach(s=>{
+    const prog=progress[s.id];
+    const scored=prog.scores.reduce((a,b)=>a+b,0);
+    const maxScore=s.levels.length*5;
+    total+=scored; max+=maxScore;
+    const item=document.createElement('div');
+    item.className='result-item';
+    item.innerHTML=`<span class="result-item-icon">${s.icon}</span><div class="result-item-name">${s.name}</div><div class="result-item-score">${scored}/${maxScore}</div>`;
+    grid.appendChild(item);
+  });
+  document.getElementById('results-subtitle').textContent=`${player.avatar} ${player.name} · Total: ${total}/${max} respuestas correctas ⭐ ${player.stars}`;
+  showScreen('screen-results');
+}
+
+/* ===========================
+   UTILS
+=========================== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function shuffle(arr) {
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function addStars(n) {
+  player.stars+=n;
+  document.getElementById('hdr-stars').textContent=player.stars;
+  saveState();
+}
+
+function shakeEl(el) {
+  el.style.animation='shake .4s ease';
+  el.addEventListener('animationend',()=>el.style.animation='',{once:true});
+}
+
+function popMessage(msg) {
+  const div=document.createElement('div');
+  div.textContent=msg;
+  div.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f7406e,#ff914d);color:#fff;font-family:Nunito,sans-serif;font-weight:900;font-size:1.1rem;padding:12px 28px;border-radius:50px;z-index:9999;animation:fadeIn .3s ease;box-shadow:0 4px 20px rgba(247,64,110,.5)';
+  document.body.appendChild(div);
+  setTimeout(()=>div.remove(),2000);
+}
+
+function confetti() {
+  const colors=['#f7406e','#ffd200','#38ef7d','#6dd5ed','#c850c0','#ff914d','#fff'];
+  for(let i=0;i<60;i++){
+    const piece=document.createElement('div');
+    piece.className='confetti-piece';
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    const left=Math.random()*100;
+    const dur=(Math.random()*1.5+1.5).toFixed(2)+'s';
+    const dx=((Math.random()-0.5)*300).toFixed(0)+'px';
+    const rot=(Math.random()*720-360).toFixed(0)+'deg';
+    piece.style.cssText=`left:${left}%;background:${color};--dur:${dur};--dx:${dx};--rot:${rot};animation-delay:${(Math.random()*.5).toFixed(2)}s`;
+    document.body.appendChild(piece);
+    piece.addEventListener('animationend',()=>piece.remove());
+  }
+}
+
+/* ===========================
+   BOOT
+=========================== */
+loadState();
+initProgress();
+if(player.name) {
+  // returning player
+  document.getElementById('player-name').value=player.name;
+  selectedAvatar=player.avatar;
+  document.querySelectorAll('.avatar-option').forEach(a=>{
+    if(a.dataset.a===player.avatar) { a.classList.add('selected'); }
+  });
+}
+</script>
 </body>
 </html>
