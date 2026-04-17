@@ -582,6 +582,7 @@ function startGame(subjectId, levelIdx) {
     current:0, correct:0, streak:0,
     // build state
     buildSelectedLeft:null, buildMatched:0,
+    sessionStars:0, finished:false // to prevent point farming
   };
   document.getElementById('game-subject-label').textContent=`${sub.icon} ${sub.name} · ${level.name}`;
   document.getElementById('feedback-msg').textContent='';
@@ -764,9 +765,15 @@ function setProgress(current) {
 
 // ===== LEVEL COMPLETE =====
 function finishLevel() {
+  game.finished = true;
+  if(game.sessionStars) {
+    player.stars += game.sessionStars;
+  }
+  
   const total=game.questions.length, correct=game.correct;
   const ratio=correct/total, bonus=correct===total?20:0;
   if(bonus) addStars(bonus);
+  
   const prog=progress[game.subjectId];
   prog.scores[game.levelIdx]=Math.max(prog.scores[game.levelIdx],correct);
   prog.levels[game.levelIdx]='done';
@@ -791,7 +798,7 @@ function nextLevel() {
   if(game.levelIdx+1<game.sub.levels.length) startGame(game.subjectId,game.levelIdx+1);
   else goHub();
 }
-function goHub() { showHub(); }
+function goHub() { game = {}; showHub(); }
 
 // ===== RESULTS =====
 function showResults() {
@@ -820,7 +827,16 @@ function shuffle(arr) {
   for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
   return arr;
 }
-function addStars(n) { player.stars+=n; document.getElementById('hdr-stars').textContent=player.stars; saveState(); }
+function addStars(n) { 
+  if (game && !game.finished && game.subjectId) {
+    game.sessionStars = (game.sessionStars || 0) + n;
+    document.getElementById('hdr-stars').textContent = player.stars + game.sessionStars;
+  } else {
+    player.stars += n; 
+    document.getElementById('hdr-stars').textContent = player.stars; 
+    saveState(); 
+  }
+}
 function popMessage(msg) {
   const div=document.createElement('div');
   div.textContent=msg;
