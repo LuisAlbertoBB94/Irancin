@@ -3,1339 +3,1454 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>🦕 Yoshi Fracciones — ¡Piensa y Come!</title>
+  <title>🦕 Yoshi Fracciones</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       width: 100%; height: 100%;
-      background: #0a1f10;
-      overflow: hidden;
-      touch-action: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Fredoka One', 'Comic Sans MS', cursive;
-    }
-
-    /* ──────────── THINK PANEL ──────────── */
-    #think-overlay {
-      position: fixed; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: radial-gradient(ellipse at 50% 30%, #0d3320 0%, #050f08 100%);
-      z-index: 200;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-start;
-      padding: 20px 18px 16px;
-      overflow-y: auto;
-      transition: opacity 0.5s ease;
-    }
-    #think-overlay.hidden { opacity: 0; pointer-events: none; }
-
-    .think-logo {
-      font-size: 42px; font-weight: bold;
-      background: linear-gradient(135deg, #69f0ae, #FFD740);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-shadow: none;
-      letter-spacing: 2px;
-      margin-bottom: 2px;
-    }
-    .think-tagline {
-      font-size: 14px; color: rgba(255,255,255,0.45);
-      margin-bottom: 14px;
-    }
-
-    .think-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(105,240,174,0.2);
-      border-radius: 20px;
-      padding: 16px;
-      width: 100%; max-width: 380px;
-      margin-bottom: 12px;
-    }
-
-    .mission-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(105,240,174,0.12);
-      border: 1px solid rgba(105,240,174,0.3);
-      color: #69f0ae;
-      font-size: 13px; border-radius: 50px;
-      padding: 4px 12px; margin-bottom: 10px;
-    }
-
-    .think-story {
-      font-size: 16px; color: #e8f5e9;
-      line-height: 1.5; text-align: center;
-    }
-
-    /* Fraction pie visual */
-    .fraction-row {
-      display: flex; gap: 10px; justify-content: center;
-      margin: 12px 0;
-    }
-    .frac-slot {
-      display: flex; flex-direction: column; align-items: center; gap: 5px;
-    }
-    .frac-pie {
-      width: 54px; height: 54px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.2);
-      position: relative; overflow: hidden;
-      background: rgba(255,255,255,0.05);
-    }
-    .frac-pie.filled { background: #2ecc71; border-color: #27ae60; box-shadow: 0 0 14px rgba(46,204,113,0.5); }
-    .frac-pie.half-filled { background: linear-gradient(to right, #2ecc71 50%, rgba(255,255,255,0.05) 50%); border-color: #f39c12; }
-    .frac-label { font-size: 13px; color: rgba(255,255,255,0.6); }
-    .frac-pie.filled .frac-check { display: flex; }
-    .frac-check { display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 22px; }
-
-    .think-question {
-      font-size: 17px; color: #FFF9C4;
-      text-align: center; line-height: 1.5;
-    }
-
-    .answer-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px; width: 100%; max-width: 380px;
-      margin-bottom: 10px;
-    }
-    .answer-btn {
-      background: rgba(255,255,255,0.06);
-      border: 2px solid rgba(255,255,255,0.15);
-      color: #fff; font-size: 20px;
-      padding: 14px 8px; border-radius: 16px;
-      cursor: pointer; text-align: center;
+      background: #060e08;
+      overflow: hidden; touch-action: none;
+      display: flex; justify-content: center; align-items: center;
       font-family: 'Fredoka One', cursive;
-      transition: all 0.18s;
+    }
+
+    /* ── OVERLAY ────────────────────────────── */
+    #overlay {
+      position: fixed; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, #0f3320 0%, #030a05 100%);
+      z-index: 300;
+      display: flex; flex-direction: column;
+      align-items: center; overflow-y: auto;
+      padding: 16px 16px 24px;
+      gap: 12px;
+      transition: opacity 0.4s;
+    }
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+
+    /* ── LEVEL HEADER ── */
+    .ov-header {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; max-width: 380px;
+    }
+    .ov-lvl {
+      background: rgba(105,240,174,0.15);
+      border: 1px solid rgba(105,240,174,0.35);
+      color: #69f0ae; font-size: 14px;
+      padding: 4px 14px; border-radius: 50px;
+    }
+    .ov-phase {
+      background: rgba(255,215,0,0.12);
+      border: 1px solid rgba(255,215,0,0.3);
+      color: #ffd740; font-size: 14px;
+      padding: 4px 14px; border-radius: 50px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 14px 16px;
+      width: 100%; max-width: 380px;
+    }
+
+    /* Tutorial steps (only level 1) */
+    .tuto-steps {
+      display: flex; justify-content: space-around; gap: 6px;
+    }
+    .tuto-step {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px; padding: 8px 4px;
+    }
+    .tuto-step .icon { font-size: 26px; }
+    .tuto-step .txt  { font-size: 11px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.2; }
+
+    /* Story */
+    .story-text {
+      font-size: 15px; color: #e8f5e9; line-height: 1.5;
+      text-align: center;
+    }
+    .story-emoji { font-size: 28px; display: block; text-align: center; margin-bottom: 6px; }
+
+    /* Phase intro (improper fractions reveal) */
+    .phase-reveal {
+      display: flex; flex-direction: column; gap: 8px; align-items: center;
+    }
+    .phase-reveal-title {
+      font-size: 22px; color: #ffd740; text-align: center;
+    }
+    .phase-reveal-body {
+      font-size: 14px; color: rgba(255,255,255,0.65); text-align: center; line-height: 1.5;
+    }
+    .phase-example {
+      display: flex; flex-direction: column; gap: 4px; align-items: center;
+    }
+    .phase-row {
+      display: flex; gap: 4px;
+    }
+    .phase-tile {
+      width: 40px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: bold;
+    }
+    .pt-green { background: #2e7d32; color: #a5d6a7; }
+    .pt-red   { background: #c62828; color: #ffcdd2; }
+    .pt-empty { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.3); }
+    .phase-row-label { font-size: 11px; color: rgba(255,215,0,0.7); }
+
+    /* Goal display */
+    .goal-body { display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .goal-fraction {
+      font-size: 52px; color: #ffd740;
+      text-shadow: 0 0 20px rgba(255,215,0,0.4);
+    }
+    .goal-desc { display: flex; flex-direction: column; gap: 2px; }
+    .goal-desc-main { font-size: 16px; color: #a5d6a7; }
+    .goal-desc-sub  { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+    /* Planning tiles */
+    .plan-prompt { font-size: 15px; color: #fff9c4; text-align: center; margin-bottom: 10px; }
+    .tiles-outer { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+    .tiles-group { display: flex; gap: 5px; }
+    .tile-divider {
+      width: 2px; height: 54px; border-radius: 2px;
+      background: rgba(255,215,0,0.35);
+      align-self: center;
+    }
+    .tile-divider-label {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px;
+    }
+    .tile-divider-bar { width: 2px; flex: 1; background: rgba(255,215,0,0.35); border-radius: 2px; }
+    .tile-divider-txt { font-size: 9px; color: rgba(255,215,0,0.55); white-space: nowrap; }
+
+    .q-tile {
+      width: 56px; height: 56px; border-radius: 13px;
+      border: 2px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 17px; color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      transition: all 0.14s ease;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      gap: 1px;
+    }
+    .q-tile .tile-top { font-size: 15px; }
+    .q-tile .tile-bot { font-size: 9px; opacity: 0.7; }
+    .q-tile.filled {
+      background: linear-gradient(145deg, #e53935, #b71c1c);
+      border-color: #ef5350;
+      color: white;
+      box-shadow: 0 3px 14px rgba(229,57,53,0.4);
+      transform: translateY(-2px);
+    }
+    .q-tile.filled .tile-bot { opacity: 0.8; }
+
+    .plan-result {
+      text-align: center; margin-top: 10px;
+      font-size: 16px; color: rgba(255,255,255,0.6);
+    }
+    .plan-result span { color: #ffd740; font-size: 20px; }
+
+    .plan-feedback {
+      font-size: 14px; text-align: center;
+      line-height: 1.4; padding: 8px 10px;
+      border-radius: 12px; margin-top: 6px;
+      display: none;
+    }
+    .plan-feedback.correct {
+      display: block; background: rgba(46,204,113,0.12);
+      color: #69f0ae; border: 1px solid rgba(46,204,113,0.25);
+    }
+    .plan-feedback.hint {
+      display: block; background: rgba(255,215,0,0.08);
+      color: #ffe082; border: 1px solid rgba(255,215,0,0.2);
+    }
+
+    /* Go button */
+    .go-btn {
+      width: 100%; max-width: 380px;
+      padding: 18px 24px; border-radius: 50px;
+      border: none; cursor: pointer;
+      font-family: 'Fredoka One', cursive;
+      font-size: 22px; color: white;
+      background: linear-gradient(135deg, #388e3c, #1b5e20);
+      box-shadow: 0 8px 24px rgba(56,142,60,0.35);
+      transition: transform 0.14s, box-shadow 0.14s;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
-    .answer-btn:active { transform: scale(0.95); }
-    .answer-btn.correct { background: #27ae60; border-color: #2ecc71; box-shadow: 0 0 16px rgba(46,204,113,0.5); }
-    .answer-btn.wrong   { background: #c0392b; border-color: #e74c3c; }
-
-    .feedback-box {
-      width: 100%; max-width: 380px;
-      min-height: 56px; padding: 10px 14px;
-      border-radius: 14px;
-      font-size: 15px; color: #FFD740; text-align: center;
-      line-height: 1.4; margin-bottom: 10px;
-      background: rgba(255,215,0,0.06);
-      border: 1px solid rgba(255,215,0,0.15);
-      display: none;
+    .go-btn.perfect {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      box-shadow: 0 8px 28px rgba(46,204,113,0.5);
+      animation: pulsebtn 1.4s ease-in-out infinite;
     }
-    .feedback-box.visible { display: block; }
-
-    .play-btn {
-      display: none;
-      width: 100%; max-width: 380px;
-      padding: 18px;
-      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-      color: #fff; font-size: 24px;
-      border: none; border-radius: 50px;
-      cursor: pointer; font-family: 'Fredoka One', cursive;
-      box-shadow: 0 8px 28px rgba(46,204,113,0.4);
-      transition: transform 0.15s, box-shadow 0.15s;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
+    .go-btn:active { transform: scale(0.97); }
+    @keyframes pulsebtn {
+      0%,100% { box-shadow: 0 8px 28px rgba(46,204,113,0.4); }
+      50%      { box-shadow: 0 8px 40px rgba(46,204,113,0.7); }
     }
-    .play-btn.visible { display: block; }
-    .play-btn:active { transform: scale(0.97); }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════ THINK FIRST OVERLAY ═══════════════ -->
-<div id="think-overlay">
-  <div class="think-logo">YOSHI 🦕</div>
-  <div class="think-tagline">¡Piensa antes de actuar!</div>
-
-  <div class="think-card">
-    <div class="mission-badge" id="mission-badge">🌟 Misión 1</div>
-    <div class="think-story" id="think-story">...</div>
+<!-- ═══════════════ PLANNING OVERLAY ═══════════════ -->
+<div id="overlay">
+  <!-- Level / Phase badges -->
+  <div class="ov-header">
+    <div class="ov-lvl"  id="ov-lvl">NIVEL 1</div>
+    <div class="ov-phase" id="ov-phase">FRACCIONES PROPIAS</div>
   </div>
 
-  <div class="think-card" style="text-align:center;">
-    <div style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:8px;">OBJETIVO VISUAL</div>
-    <div class="fraction-row" id="fraction-visual"></div>
-    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px;">Cada círculo = 1/4</div>
+  <!-- Tutorial (only level 1) -->
+  <div class="card" id="tutorial-card" style="display:none">
+    <div class="tuto-steps">
+      <div class="tuto-step"><div class="icon">🕹️</div><div class="txt">Mueve a<br>Yoshi</div></div>
+      <div class="tuto-step"><div class="icon">🍕</div><div class="txt">Recoge<br>comida</div></div>
+      <div class="tuto-step"><div class="icon">🥚</div><div class="txt">Pulsa<br>Entregar</div></div>
+      <div class="tuto-step"><div class="icon">⚠️</div><div class="txt">¡No<br>pases!</div></div>
+    </div>
   </div>
 
-  <div class="think-card">
-    <div class="think-question" id="think-question">...</div>
+  <!-- Phase reveal (improper fractions) -->
+  <div class="card" id="phase-card" style="display:none">
+    <div class="phase-reveal">
+      <div class="phase-reveal-title">🎉 ¡Nueva Fase Desbloqueada!</div>
+      <div class="phase-reveal-body">
+        Las <strong style="color:#ffd740">fracciones impropias</strong> son mayores que 1.<br>
+        Yoshi necesita <em>más de un entero completo</em>.
+      </div>
+      <div class="phase-example">
+        <div class="phase-row">
+          <div class="phase-tile pt-green">¼</div>
+          <div class="phase-tile pt-green">¼</div>
+          <div class="phase-tile pt-green">¼</div>
+          <div class="phase-tile pt-green">¼</div>
+          <span style="color:#ffd740;font-size:20px;align-self:center;">+</span>
+          <div class="phase-tile pt-red">¼</div>
+        </div>
+        <div class="phase-row-label">4/4 (1 entero) + 1/4 extra = <strong style="color:#ffd740">5/4</strong></div>
+      </div>
+    </div>
   </div>
 
-  <div class="answer-grid" id="answer-grid"></div>
-  <div class="feedback-box" id="feedback-box"></div>
-  <button class="play-btn" id="play-btn" onclick="startGame()">🎮 ¡A Jugar!</button>
+  <!-- Story -->
+  <div class="card">
+    <span class="story-emoji" id="story-emoji">🦕</span>
+    <p class="story-text" id="story-text">...</p>
+  </div>
+
+  <!-- Goal -->
+  <div class="card">
+    <div class="goal-body">
+      <div class="goal-fraction" id="goal-fraction">1/2</div>
+      <div class="goal-desc">
+        <div class="goal-desc-main" id="goal-main">= 2 piezas de ¼</div>
+        <div class="goal-desc-sub"  id="goal-sub">Come exactamente esto</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Plan -->
+  <div class="card">
+    <div class="plan-prompt" id="plan-prompt">🤔 Toca los cuartos que vas a recoger:</div>
+    <div class="tiles-outer" id="tiles-outer"></div>
+    <div class="plan-result" id="plan-result">Seleccionaste: <span>0 cuartos (nada)</span></div>
+    <div class="plan-feedback" id="plan-feedback"></div>
+  </div>
+
+  <button class="go-btn" id="go-btn" onclick="onGoBtn()">🎮 ¡A Jugar!</button>
 </div>
 
 <!-- ═══════════════ PHASER CANVAS ═══════════════ -->
 <div id="game-container"></div>
 
 <script>
-/* ═══════════════════════════════════════════════════════
-   GAME CONSTANTS
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════════════════ */
 const GW = 390, GH = 700;
-let gameInstance = null;
-let activeScene  = null;
-let currentMissionIndex = 0;
+const NEST_X = GW / 2, NEST_Y = 370;
+const YOSHI_START_X = GW / 2, YOSHI_START_Y = 570;
 
-/* ═══════════════════════════════════════════════════════
-   MISSIONS — Pedagogical design
-═══════════════════════════════════════════════════════ */
-const MISSIONS = [
+/* ══════════════════════════════════════════════════════════
+   LEVELS  (12 total: 6 proper + 6 improper)
+══════════════════════════════════════════════════════════ */
+const LEVELS = [
+  // ── PHASE 1: PROPER FRACTIONS ────────────────────────
   {
-    target: 0.5, display: '1/2', filledPieces: 2,
-    badge: '🍕 Misión 1',
-    story: 'Yoshi tiene hambre pero debe comer EXACTAMENTE la mitad (1/2) de su comida favorita. Si come de más, ¡le dará dolor de panza!',
-    question: '¿Cuántas rebanadas de 1/4 necesitas juntar para tener exactamente 1/2?',
-    options: ['1 rebanada', '2 rebanadas', '3 rebanadas', '4 rebanadas'],
-    correctIndex: 1,
-    explanation: '✅ ¡Correcto! 1/4 + 1/4 = 2/4 = 1/2. Junta exactamente 2 piezas de pizza.'
+    phase: 1, num: 1,
+    target: 0.25, display: '¼', targetQ: 1, maxTiles: 4,
+    emoji: '😋', food: { q: 5, h: 0 },
+    story: 'Yoshi no tiene mucha hambre. Solo necesita ¼ de su pizza favorita. ¡No comas más o te dolerá la panza!'
   },
   {
-    target: 0.75, display: '3/4', filledPieces: 3,
-    badge: '🍉 Misión 2',
-    story: 'Yoshi creció y necesita más energía 💪. Esta vez debe comer tres cuartos (3/4). ¡Piensa cuántas piezas son antes de correr!',
-    question: '¿Cuántas piezas de 1/4 suman exactamente 3/4?',
-    options: ['2 piezas', '3 piezas', '4 piezas', '1 pieza'],
-    correctIndex: 1,
-    explanation: '✅ ¡Brillante! 1/4 + 1/4 + 1/4 = 3/4. Son 3 piezas, ni más ni menos.'
+    phase: 1, num: 2,
+    target: 0.5, display: '½', targetQ: 2, maxTiles: 4,
+    emoji: '🦕', food: { q: 5, h: 0 },
+    story: 'Yoshi necesita exactamente la MITAD (½) de su pizza. Hay 4 rebanadas en total: ¿cuántas son la mitad?'
   },
   {
-    target: 1.0, display: '1 Entero', filledPieces: 4,
-    badge: '🎉 Misión 3',
-    story: '¡Es el gran festín de Yoshi! 🥳 Necesita completar UN ENTERO (4/4 = 1). ¿Puedes calcular cuántas piezas son antes de tocar una sola?',
-    question: 'Si tienes piezas de 1/4, ¿cuántas necesitas para completar 1 entero?',
-    options: ['3 piezas', '5 piezas', '4 piezas', '2 piezas'],
-    correctIndex: 2,
-    explanation: '✅ ¡Perfecto! 4 × (1/4) = 4/4 = 1 entero. ¡Las 4 piezas de la pizza completa!'
+    phase: 1, num: 3,
+    target: 0.75, display: '¾', targetQ: 3, maxTiles: 4,
+    emoji: '💪', food: { q: 5, h: 0 },
+    story: '¡Yoshi tiene más hambre! Necesita TRES CUARTOS (¾) de su pizza. Son 3 de las 4 rebanadas.'
   },
   {
-    target: 0.75, display: '3/4', filledPieces: 3,
-    badge: '🧠 Desafío',
-    story: 'Yoshi ya tiene 1/2 en el estómago y quiere llegar a 3/4. ¿Cuánto más necesita? Piénsalo: no es cuánto hay que comer en total, sino cuánto FALTA.',
-    question: 'Yoshi tiene 1/2. ¿Cuánto más necesita para llegar a 3/4?',
-    options: ['1/4 más', '1/2 más', '3/4 más', '1/4 menos'],
-    correctIndex: 0,
-    explanation: '✅ ¡Excelente razonamiento! 3/4 − 1/2 = 3/4 − 2/4 = 1/4. Solo falta 1 pieza más.'
+    phase: 1, num: 4,
+    target: 0.5, display: '½', targetQ: 2, maxTiles: 4,
+    emoji: '🍉', food: { q: 3, h: 2 },
+    story: '¡Ahora hay piezas de ½ también! Yoshi necesita ½. Puedes usar UNA pieza grande, o DOS piezas pequeñas. ¡Tú decides!'
+  },
+  {
+    phase: 1, num: 5,
+    target: 0.75, display: '¾', targetQ: 3, maxTiles: 4,
+    emoji: '🧠', food: { q: 3, h: 2 },
+    story: 'Meta: ¾. Hay piezas de ¼ y de ½. Una buena estrategia: toma UNA de ½ y UNA de ¼. ¡Piénsalo antes de correr!'
+  },
+  {
+    phase: 1, num: 6,
+    target: 1.0, display: '1 Entero', targetQ: 4, maxTiles: 4,
+    emoji: '🎉', food: { q: 3, h: 3 },
+    story: '¡El gran festín! Yoshi necesita UN ENTERO completo (4/4 = 1). Con piezas de ¼ y ½, ¿qué combinación usarás?'
+  },
+  // ── PHASE 2: IMPROPER FRACTIONS ──────────────────────
+  {
+    phase: 2, num: 1,
+    target: 1.25, display: '5/4', targetQ: 5, maxTiles: 8,
+    emoji: '😮', food: { q: 5, h: 3 },
+    story: '¡Yoshi creció y necesita MÁS de un entero! 5/4 significa: 4/4 (un entero completo) + 1/4 extra. ¡Es una fracción IMPROPIA!'
+  },
+  {
+    phase: 2, num: 2,
+    target: 1.5, display: '3/2', targetQ: 6, maxTiles: 8,
+    emoji: '🔥', food: { q: 4, h: 4 },
+    story: '3/2 = 6/4 = un entero y MEDIO. Son seis cuartos, o lo mismo que uno y medio. ¿Puedes calcular cuántas piezas necesitas?'
+  },
+  {
+    phase: 2, num: 3,
+    target: 1.75, display: '7/4', targetQ: 7, maxTiles: 8,
+    emoji: '⚡', food: { q: 5, h: 3 },
+    story: '7/4 = un entero (4/4) + tres cuartos (3/4). ¡Son 7 piezas de ¼! Planea bien: si pasas de 7/4, Yoshi tendrá dolor de panza.'
+  },
+  {
+    phase: 2, num: 4,
+    target: 2.0, display: '2 Enteros', targetQ: 8, maxTiles: 8,
+    emoji: '🏆', food: { q: 4, h: 4 },
+    story: '¡El Mega Festín! Yoshi necesita exactamente 2 enteros completos (8/4). ¡Llena las 8 casillas de tu plan!'
+  },
+  {
+    phase: 2, num: 5,
+    target: 1.25, display: '5/4', targetQ: 5, maxTiles: 8,
+    emoji: '🧩', food: { q: 3, h: 3 },
+    story: '¡Desafío! La meta es 5/4 pero hay menos piezas disponibles. ¿Puedes encontrar la combinación exacta? Piénsalo primero.'
+  },
+  {
+    phase: 2, num: 6,
+    target: 1.5, display: '3/2', targetQ: 6, maxTiles: 8,
+    emoji: '🌟', food: { q: 3, h: 4 },
+    story: '¡Desafío Final! Meta: 3/2. Con piezas de ¼ y ½ mezcladas, ¿cuántas necesitas de cada tipo? ¡Este es el reto más difícil!'
   }
 ];
 
-/* ═══════════════════════════════════════════════════════
-   THINK PANEL
-═══════════════════════════════════════════════════════ */
-function showThinkPanel(idx) {
-  const m = MISSIONS[idx];
-  const overlay = document.getElementById('think-overlay');
-  overlay.classList.remove('hidden');
-  document.getElementById('mission-badge').textContent  = m.badge;
-  document.getElementById('think-story').textContent    = m.story;
-  document.getElementById('think-question').textContent = m.question;
+/* ══════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════ */
+let gameInstance  = null;
+let activeScene   = null;
+let currentLevel  = 0;
+let planSel       = 0;   // how many quarter-tiles selected in plan
 
-  // Fraction visual
-  const fv = document.getElementById('fraction-visual');
-  fv.innerHTML = '';
-  for (let i = 0; i < 4; i++) {
-    const slot  = document.createElement('div');
-    slot.className = 'frac-slot';
-    const pie   = document.createElement('div');
-    pie.className = 'frac-pie' + (i < m.filledPieces ? ' filled' : '');
-    const check = document.createElement('div');
-    check.className = 'frac-check';
-    check.textContent = '✓';
-    pie.appendChild(check);
-    const lbl   = document.createElement('div');
-    lbl.className = 'frac-label';
-    lbl.textContent = '1/4';
-    slot.appendChild(pie);
-    slot.appendChild(lbl);
-    fv.appendChild(slot);
-  }
-
-  // Reset state
-  document.getElementById('feedback-box').className = 'feedback-box';
-  document.getElementById('feedback-box').textContent = '';
-  document.getElementById('play-btn').className = 'play-btn';
-
-  // Answer buttons
-  const grid = document.getElementById('answer-grid');
-  grid.innerHTML = '';
-  m.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'answer-btn';
-    btn.textContent = opt;
-    btn.onclick = () => handleAnswer(i, m);
-    grid.appendChild(btn);
-  });
-
-  // Scroll to top
-  overlay.scrollTop = 0;
+/* ══════════════════════════════════════════════════════════
+   FRACTION HELPER
+══════════════════════════════════════════════════════════ */
+function qToStr(q) {
+  const map = {0:'0',1:'¼',2:'½',3:'¾',4:'1 entero',5:'5/4',6:'3/2 (1½)',7:'7/4',8:'2 enteros'};
+  return map[q] ?? `${q}/4`;
+}
+function numToStr(n) {
+  const map = {0:'nada',0.25:'¼',0.5:'½',0.75:'¾',1:'1 entero',1.25:'5/4',1.5:'3/2',1.75:'7/4',2:'2 enteros'};
+  return map[n] ?? n.toFixed(2);
 }
 
-function handleAnswer(idx, mission) {
-  const allBtns = document.querySelectorAll('.answer-btn');
-  allBtns.forEach(b => { b.style.pointerEvents = 'none'; });
+/* ══════════════════════════════════════════════════════════
+   SOUND
+══════════════════════════════════════════════════════════ */
+let _ac = null;
+const AC = () => { if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)(); return _ac; };
+function tone(f, d, t='sine', v=0.16) {
+  try {
+    const c=AC(), o=c.createOscillator(), g=c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type=t; o.frequency.value=f;
+    g.gain.setValueAtTime(v, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime+d);
+    o.start(c.currentTime); o.stop(c.currentTime+d);
+  } catch(e) {}
+}
+function snd(n) {
+  if (n==='collect') { tone(523,0.07); setTimeout(()=>tone(659,0.08),70); }
+  else if (n==='victory') { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>tone(f,0.15),i*95)); }
+  else if (n==='ouch')    { [440,330,220].forEach((f,i)=>setTimeout(()=>tone(f,0.12,'sawtooth',0.12),i*90)); }
+  else if (n==='plan')    { tone(880,0.06); setTimeout(()=>tone(1100,0.07),60); }
+}
 
-  const fb = document.getElementById('feedback-box');
-  fb.className = 'feedback-box visible';
-  fb.textContent = mission.explanation;
+/* ══════════════════════════════════════════════════════════
+   PLANNING OVERLAY — show
+══════════════════════════════════════════════════════════ */
+function showOverlay(idx) {
+  const lvl = LEVELS[idx];
+  planSel = 0;
 
-  if (idx === mission.correctIndex) {
-    allBtns[idx].classList.add('correct');
-    playSound('correct');
+  // Badges
+  document.getElementById('ov-lvl').textContent   = `NIVEL ${idx + 1}`;
+  document.getElementById('ov-phase').textContent  =
+    lvl.phase === 1 ? 'FRACCIONES PROPIAS' : 'FRACCIONES IMPROPIAS';
+
+  // Tutorial (level 0 only)
+  document.getElementById('tutorial-card').style.display = idx === 0 ? 'block' : 'none';
+
+  // Phase reveal (level 6 only — transition to improper)
+  document.getElementById('phase-card').style.display = idx === 6 ? 'block' : 'none';
+
+  // Story
+  document.getElementById('story-emoji').textContent = lvl.emoji;
+  document.getElementById('story-text').textContent  = lvl.story;
+
+  // Goal
+  document.getElementById('goal-fraction').textContent = lvl.display;
+  const pieces = lvl.phase === 1
+    ? `= ${lvl.targetQ} pieza${lvl.targetQ > 1 ? 's' : ''} de ¼`
+    : `= ${lvl.targetQ} cuartos de pizza`;
+  document.getElementById('goal-main').textContent = pieces;
+  document.getElementById('goal-sub').textContent  = lvl.phase === 2
+    ? '¡Más de un entero completo!' : 'Come exactamente esto';
+
+  // Build tiles
+  buildTiles(lvl);
+
+  // Reset UI
+  document.getElementById('plan-feedback').className = 'plan-feedback';
+  updatePlanUI();
+
+  document.getElementById('overlay').classList.remove('hidden');
+  document.getElementById('overlay').scrollTop = 0;
+}
+
+/* ── BUILD TILES ── */
+function buildTiles(lvl) {
+  const outer = document.getElementById('tiles-outer');
+  outer.innerHTML = '';
+  planSel = 0;
+
+  if (lvl.maxTiles <= 4) {
+    // Single row
+    const g = makeGroup(0, 4);
+    outer.appendChild(g);
   } else {
-    allBtns[idx].classList.add('wrong');
-    setTimeout(() => allBtns[mission.correctIndex].classList.add('correct'), 400);
-    playSound('wrong');
-  }
+    // Two rows with divider
+    const g1 = makeGroup(0, 4);
+    const dividerWrap = document.createElement('div');
+    dividerWrap.className = 'tile-divider-label';
+    const bar1 = document.createElement('div'); bar1.className = 'tile-divider-bar';
+    const lbl  = document.createElement('div'); lbl.className = 'tile-divider-txt'; lbl.textContent = '1 ENTERO';
+    const bar2 = document.createElement('div'); bar2.className = 'tile-divider-bar';
+    dividerWrap.appendChild(bar1); dividerWrap.appendChild(lbl); dividerWrap.appendChild(bar2);
 
-  setTimeout(() => {
-    document.getElementById('play-btn').className = 'play-btn visible';
-  }, 600);
+    const g2 = makeGroup(4, lvl.maxTiles);
+    outer.appendChild(g1); outer.appendChild(dividerWrap); outer.appendChild(g2);
+  }
 }
 
-function startGame() {
-  document.getElementById('think-overlay').classList.add('hidden');
+function makeGroup(from, to) {
+  const grp = document.createElement('div');
+  grp.className = 'tiles-group';
+  for (let i = from; i < to; i++) {
+    const t = document.createElement('div');
+    t.className = 'q-tile';
+    t.id = `qt-${i}`;
+    const top = document.createElement('div'); top.className = 'tile-top'; top.textContent = '¼';
+    const bot = document.createElement('div'); bot.className = 'tile-bot'; bot.textContent = `#${i+1}`;
+    t.appendChild(top); t.appendChild(bot);
+    t.addEventListener('pointerdown', () => tapTile(i));
+    grp.appendChild(t);
+  }
+  return grp;
+}
+
+/* ── TAP TILE ── */
+function tapTile(idx) {
+  const lvl = LEVELS[currentLevel];
+  const max = lvl.maxTiles;
+  if (idx + 1 === planSel) {
+    planSel = Math.max(0, planSel - 1);
+  } else {
+    planSel = Math.min(idx + 1, max);
+  }
+  snd('plan');
+  updatePlanUI();
+}
+
+/* ── UPDATE PLAN UI ── */
+function updatePlanUI() {
+  const lvl = LEVELS[currentLevel];
+  const max = lvl.maxTiles;
+
+  for (let i = 0; i < max; i++) {
+    const t = document.getElementById(`qt-${i}`);
+    if (t) t.className = 'q-tile' + (i < planSel ? ' filled' : '');
+  }
+
+  const label = `<span>${planSel} cuartos = ${qToStr(planSel)}</span>`;
+  document.getElementById('plan-result').innerHTML = `Seleccionaste: ${label}`;
+
+  const planVal = planSel * 0.25;
+  const correct = Math.abs(planVal - lvl.target) < 0.005;
+  const fb  = document.getElementById('plan-feedback');
+  const btn = document.getElementById('go-btn');
+
+  if (planSel === 0) {
+    fb.className = 'plan-feedback';
+    btn.className = 'go-btn';
+    btn.textContent = '🎮 ¡A Jugar!';
+  } else if (correct) {
+    fb.className = 'plan-feedback correct';
+    fb.textContent = `✅ ¡Exacto! ${qToStr(planSel)} = ${lvl.display}. ¡Tu plan es perfecto!`;
+    btn.className = 'go-btn perfect';
+    btn.textContent = '🌟 ¡Plan Perfecto! ¡A Jugar!';
+  } else {
+    fb.className = 'plan-feedback hint';
+    fb.textContent = `🤔 ${qToStr(planSel)} ≠ ${lvl.display}. El objetivo es ${lvl.display}. ¿Cuántos cuartos son eso?`;
+    btn.className = 'go-btn';
+    btn.textContent = '🎮 ¡A Jugar de todos modos!';
+  }
+}
+
+/* ── GO BUTTON ── */
+function onGoBtn() {
+  document.getElementById('overlay').classList.add('hidden');
   if (!gameInstance) {
     initPhaser();
   } else if (activeScene) {
-    activeScene.beginMission(MISSIONS[currentMissionIndex]);
+    activeScene.beginLevel(LEVELS[currentLevel], planSel);
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   WEB AUDIO (procedural sounds)
-═══════════════════════════════════════════════════════ */
-let audioCtx = null;
-function getAudio() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-function playTone(freq, dur, type='sine', gain=0.18) {
-  try {
-    const ctx = getAudio();
-    const osc = ctx.createOscillator();
-    const env = ctx.createGain();
-    osc.connect(env); env.connect(ctx.destination);
-    osc.type = type; osc.frequency.value = freq;
-    env.gain.setValueAtTime(gain, ctx.currentTime);
-    env.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur);
-  } catch(e) {}
-}
-function playSound(name) {
-  if (name === 'collect') {
-    playTone(440, 0.08, 'sine', 0.14);
-    setTimeout(() => playTone(660, 0.08, 'sine', 0.14), 80);
-  } else if (name === 'correct') {
-    [523,659,784,1047].forEach((f,i) => setTimeout(() => playTone(f,0.12,'sine',0.15), i*80));
-  } else if (name === 'wrong') {
-    playTone(300, 0.15, 'sawtooth', 0.1);
-    setTimeout(() => playTone(200, 0.25, 'sawtooth', 0.08), 150);
-  } else if (name === 'victory') {
-    [523,659,784,1047,1319].forEach((f,i) => setTimeout(() => playTone(f,0.18,'sine',0.16), i*100));
-  } else if (name === 'ouch') {
-    [440,330,220,165].forEach((f,i) => setTimeout(() => playTone(f,0.12,'sawtooth',0.12), i*80));
-  }
-}
-
-/* ═══════════════════════════════════════════════════════
-   SCENE: BOOT — Draw all textures algorithmically
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   BOOT SCENE  (generates all textures procedurally)
+══════════════════════════════════════════════════════════ */
 class BootScene extends Phaser.Scene {
   constructor() { super({ key: 'Boot' }); }
+
   create() {
-    this.makeYoshi();
-    this.makeNest();
-    this.makeFoodQuarter();
-    this.makeFoodHalf();
-    this.makeBackground();
-    this.makeJoystick();
-    this.makeParticles();
+    this.mkYoshi();
+    this.mkNest();
+    this.mkFoodQ();
+    this.mkFoodH();
+    this.mkBackground();
+    this.mkUI();
+    this.mkParticles();
     this.scene.start('Game');
   }
 
-  makeYoshi() {
-    const frames = [
-      { key: 'yoshi_a', lx: 0,  rx: 0  },
-      { key: 'yoshi_b', lx: -4, rx: 4  },
-    ];
-    frames.forEach(({ key, lx, rx }) => {
+  /* ── YOSHI ─────────────────────────────────────────── */
+  mkYoshi() {
+    [[false, 'yoshi_a'], [true, 'yoshi_b']].forEach(([walk, key]) => {
       const g = this.make.graphics({ add: false });
-      const bx = 10, by = 5; // base offset
+      // Canvas: 112 × 90 px — Yoshi faces RIGHT
 
-      // ── Shadow
-      g.fillStyle(0x000000, 0.14);
-      g.fillEllipse(bx+38, by+72, 60, 10);
+      const lbx = walk ? 29 : 34;  // left boot x
+      const rbx = walk ? 56 : 51;  // right boot x
 
-      // ── Tail (left bump)
-      g.fillStyle(0x1e8449, 1);
-      g.fillCircle(bx+8, by+46, 13);
-      g.fillCircle(bx+4, by+39, 10);
+      // — shadow
+      g.fillStyle(0x000000, 0.13);
+      g.fillEllipse(50, 87, 68, 10);
 
-      // ── LEFT BOOT
-      g.fillStyle(0xe67e22, 1);
-      g.fillEllipse(bx+18+lx, by+68, 26, 14);
-      g.fillStyle(0xd35400, 1);
-      g.fillRect(bx+8+lx, by+62, 18, 8);
+      // — tail (round ball, left side)
+      g.fillStyle(0x1e8449, 1); g.fillCircle(14, 54, 12);
+      g.fillStyle(0x27ae60, 1); g.fillCircle(14, 54, 9);
 
-      // ── RIGHT BOOT
-      g.fillStyle(0xe67e22, 1);
-      g.fillEllipse(bx+50+rx, by+68, 26, 14);
-      g.fillStyle(0xd35400, 1);
-      g.fillRect(bx+42+rx, by+62, 18, 8);
+      // — LEFT BOOT (darker: further away)
+      g.fillStyle(0x922b21, 1); g.fillEllipse(lbx,   78, 32, 15);
+      g.fillStyle(0xc0392b, 1); g.fillEllipse(lbx-1, 76, 28, 13);
+      g.fillStyle(0xffffff, 0.2); g.fillEllipse(lbx-6, 72, 12, 7);
 
-      // ── BODY (main green ellipse)
+      // — RIGHT BOOT (brighter: closer)
+      g.fillStyle(0xa93226, 1); g.fillEllipse(rbx,   78, 32, 15);
+      g.fillStyle(0xe74c3c, 1); g.fillEllipse(rbx-1, 76, 28, 13);
+      g.fillStyle(0xffffff, 0.22); g.fillEllipse(rbx-6, 72, 12, 7);
+
+      // — BODY
+      g.fillStyle(0x1e8449, 1); g.fillEllipse(48, 50, 60, 50); // outline
+      g.fillStyle(0x2ecc71, 1); g.fillEllipse(48, 48, 58, 48); // main
+
+      // — BELLY (cream, front-right of body)
+      g.fillStyle(0xfef9e7, 1); g.fillEllipse(54, 51, 28, 36);
+
+      // — SADDLE BUMPS (3 dark red bumps on back)
+      g.fillStyle(0x7b241c, 1);
+      g.fillCircle(30, 26, 7); g.fillCircle(41, 20, 9); g.fillCircle(52, 23, 7);
+      g.fillStyle(0xc0392b, 0.9);
+      g.fillCircle(29, 24, 4); g.fillCircle(40, 18, 5); g.fillCircle(51, 21, 4);
+
+      // — NECK (connects body to head)
+      g.fillStyle(0x2ecc71, 1); g.fillEllipse(67, 37, 20, 28);
+
+      // — HEAD  (large circle, forward/right side)
+      g.fillStyle(0x1e8449, 1); g.fillCircle(78, 27, 23); // outline
+      g.fillStyle(0x2ecc71, 1); g.fillCircle(78, 27, 21); // main
+
+      // — SNOUT  (KEY FEATURE: long orange oval pointing right)
+      g.fillStyle(0xe8a030, 1); g.fillEllipse(99, 35, 30, 18); // snout body
+      g.fillStyle(0xf0c055, 0.45); g.fillEllipse(96, 33, 20, 10); // highlight
+
+      // — NOSTRILS
+      g.fillStyle(0x6e2c0b, 1);
+      g.fillCircle(93, 32, 2.8); g.fillCircle(100, 32, 2.8);
+
+      // — EYE  (distinctive large eye with eyelid)
+      g.fillStyle(0x17202a, 1); g.fillEllipse(71, 22, 26, 22); // dark outline
+      g.fillStyle(0xffffff, 1); g.fillEllipse(71, 22, 24, 20); // white sclera
+      g.fillStyle(0x17202a, 1); g.fillEllipse(72, 23, 16, 14); // dark iris
+      g.fillStyle(0xffffff, 1); g.fillCircle(75, 19, 4);        // main highlight
+      g.fillStyle(0xffffff, 1); g.fillCircle(70, 27, 1.8);      // secondary highlight
+
+      // — EYELID (green half, gives Yoshi his cute hooded look)
       g.fillStyle(0x2ecc71, 1);
-      g.fillEllipse(bx+36, by+44, 56, 44);
+      g.beginPath();
+      g.moveTo(60, 22);
+      g.arc(71, 22, 12, Math.PI, 0, true, 32); // upper arc (anticlockwise → through top)
+      g.closePath();
+      g.fillPath();
+      // Eyelid edge line
+      g.lineStyle(1.8, 0x17202a, 0.65);
+      g.beginPath(); g.arc(71, 22, 12, Math.PI, 0, true, 32); g.strokePath();
 
-      // ── BELLY (cream)
-      g.fillStyle(0xfef9e7, 1);
-      g.fillEllipse(bx+38, by+46, 34, 30);
-
-      // ── BACK SPINES
-      g.fillStyle(0x17a589, 1);
-      g.fillCircle(bx+22, by+20, 7);
-      g.fillCircle(bx+33, by+14, 8);
-      g.fillCircle(bx+44, by+16, 7);
-
-      // ── SADDLE (red)
-      g.fillStyle(0xe74c3c, 1);
-      g.fillEllipse(bx+32, by+27, 38, 17);
-
-      // ── NECK
-      g.fillStyle(0x2ecc71, 1);
-      g.fillEllipse(bx+50, by+34, 20, 26);
-
-      // ── HEAD (large oval)
-      g.fillStyle(0x2ecc71, 1);
-      g.fillEllipse(bx+62, by+22, 38, 32);
-
-      // ── SNOUT (Yoshi's long nose — key feature)
-      g.fillStyle(0xf39c12, 1);
-      g.fillEllipse(bx+78, by+27, 22, 14);
-
-      // ── Nostrils
-      g.fillStyle(0x784212, 1);
-      g.fillCircle(bx+74, by+24, 2.5);
-      g.fillCircle(bx+80, by+24, 2.5);
-
-      // ── EYE outer ring
-      g.fillStyle(0x1a252f, 1);
-      g.fillCircle(bx+57, by+16, 12);
-
-      // ── EYE white sclera
-      g.fillStyle(0xffffff, 1);
-      g.fillCircle(bx+57, by+16, 10);
-
-      // ── EYE iris (blue)
-      g.fillStyle(0x2980b9, 1);
-      g.fillCircle(bx+58, by+16, 6.5);
-
-      // ── EYE pupil
-      g.fillStyle(0x0a0a0a, 1);
-      g.fillCircle(bx+58, by+16, 4.5);
-
-      // ── EYE shine (2 specular highlights)
-      g.fillStyle(0xffffff, 1);
-      g.fillCircle(bx+60, by+13, 2.5);
-      g.fillCircle(bx+56, by+18, 1.2);
-
-      // ── LEFT ARM / HAND
+      // — ARM (small, side)
       g.fillStyle(0x27ae60, 1);
-      g.fillCircle(bx+24, by+54, 8);
-      g.fillCircle(bx+18, by+52, 5);
+      g.fillCircle(64, 52, 7); g.fillCircle(70, 57, 5);
 
-      // ── RIGHT ARM / HAND
-      g.fillStyle(0x27ae60, 1);
-      g.fillCircle(bx+50, by+54, 8);
-      g.fillCircle(bx+56, by+52, 5);
-
-      g.generateTexture(key, 100, 80);
+      g.generateTexture(key, 112, 92);
       g.destroy();
     });
   }
 
-  makeNest() {
+  /* ── NEST ───────────────────────────────────────────── */
+  mkNest() {
     const g = this.make.graphics({ add: false });
+    // 120 × 102 canvas
 
-    // Shadow
-    g.fillStyle(0x000000, 0.18);
-    g.fillEllipse(56, 82, 100, 14);
+    // Ground shadow
+    g.fillStyle(0x000000, 0.2); g.fillEllipse(60, 98, 114, 14);
 
-    // Outer bowl
-    g.fillStyle(0x6d4c41, 1);
-    g.fillEllipse(56, 76, 100, 28);
+    // Nest outer bowl
+    g.fillStyle(0x4e342e, 1); g.fillEllipse(60, 90, 110, 28);
+    g.fillStyle(0x6d4c41, 1); g.fillEllipse(60, 86, 92, 22);
 
-    // Inner bowl
-    g.fillStyle(0x8d6e63, 1);
-    g.fillEllipse(56, 72, 82, 22);
-
-    // Straw lines
-    for (let i = 0; i < 10; i++) {
-      g.lineStyle(1.5, 0x4e342e, 0.7);
-      const sx = 12 + i * 9;
-      g.strokeLineShape(new Phaser.Geom.Line(sx, 78, sx + 6, 56));
+    // Straw strands
+    for (let i = 0; i < 12; i++) {
+      g.lineStyle(1.6, 0x3e2723, 0.65);
+      const sx = 8 + i * 9;
+      g.strokeLineShape(new Phaser.Geom.Line(sx, 94, sx + 8, 68));
     }
 
-    // Yoshi-style egg (cream + green spots)
-    g.fillStyle(0xfffde7, 1);
-    g.fillEllipse(56, 50, 38, 46);
+    // Yoshi egg body
+    g.fillStyle(0xfffde7, 1); g.fillEllipse(60, 52, 48, 56);
 
-    // Egg spots
-    g.fillStyle(0x4caf50, 1);
-    [{x:47,y:40},{x:60,y:36},{x:66,y:50},{x:50,y:58},{x:64,y:62}]
-      .forEach(s => g.fillCircle(s.x, s.y, 5));
+    // Egg spots (Yoshi style)
+    g.fillStyle(0x43a047, 1);
+    [{x:50,y:40},{x:65,y:36},{x:73,y:51},{x:53,y:63},{x:70,y:65}].forEach(s=>g.fillCircle(s.x,s.y,6.5));
 
-    // Egg shine
-    g.fillStyle(0xffffff, 0.55);
-    g.fillEllipse(50, 40, 16, 20);
+    // Egg highlight
+    g.fillStyle(0xffffff, 0.5); g.fillEllipse(50, 40, 20, 26);
 
-    // Sparkle stars around nest
-    g.fillStyle(0xFFD700, 1);
-    [[20, 26],[90, 24],[14, 52],[100, 48]].forEach(([x,y]) => {
-      g.fillTriangle(x,y-6, x-5,y+4, x+5,y+4);
-      g.fillTriangle(x,y+6, x-5,y-4, x+5,y-4);
+    // Sparkles
+    g.fillStyle(0xffd700, 1);
+    [[18,28],[104,26],[14,58],[108,54]].forEach(([x,y])=>{
+      g.fillTriangle(x,y-7,x-5,y+4,x+5,y+4);
+      g.fillTriangle(x,y+7,x-5,y-4,x+5,y-4);
     });
 
-    g.generateTexture('nest', 112, 96);
+    g.generateTexture('nest', 120, 104);
     g.destroy();
   }
 
-  makeFoodQuarter() {
+  /* ── FOOD QUARTER (pizza slice, 1/4) ──────────────── */
+  mkFoodQ() {
     const g = this.make.graphics({ add: false });
-    const cx = 32, cy = 32, r = 28;
+    const cx = 34, cy = 34, r = 30;
 
-    // Crust (quarter-circle, from 270° to 0°)
-    g.fillStyle(0xd4a017, 1);
-    g.beginPath();
-    g.moveTo(cx, cy);
+    // Outer crust (quarter arc, 270° to 360°)
+    g.fillStyle(0xc8a951, 1);
+    g.beginPath(); g.moveTo(cx, cy);
     g.arc(cx, cy, r, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false, 64);
-    g.closePath();
-    g.fillPath();
+    g.closePath(); g.fillPath();
 
     // Cheese layer
     g.fillStyle(0xfff176, 1);
-    g.beginPath();
-    g.moveTo(cx, cy);
-    g.arc(cx, cy, r - 5, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false, 64);
-    g.closePath();
-    g.fillPath();
+    g.beginPath(); g.moveTo(cx, cy);
+    g.arc(cx, cy, r-6, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false, 64);
+    g.closePath(); g.fillPath();
 
-    // Tomato sauce
+    // Sauce blobs
     g.fillStyle(0xef5350, 1);
-    g.fillCircle(cx+10, cy-14, 4.5);
-    g.fillCircle(cx+4,  cy-7,  3.5);
-    g.fillCircle(cx+17, cy-7,  3.0);
+    g.fillCircle(cx+11, cy-15, 5); g.fillCircle(cx+5, cy-8, 4); g.fillCircle(cx+18, cy-7, 3.5);
 
     // Pepperoni
-    g.fillStyle(0xbf360c, 1);
-    g.fillCircle(cx+12, cy-11, 4);
-    g.fillStyle(0x8b0000, 1);
-    g.fillCircle(cx+11, cy-12, 2);
+    g.fillStyle(0xbf360c, 1); g.fillCircle(cx+13, cy-12, 4.5);
+    g.fillStyle(0x8b0000, 1); g.fillCircle(cx+12, cy-13, 2.5);
 
-    // Glow border
-    g.lineStyle(2, 0xffe082, 0.9);
-    g.beginPath();
-    g.moveTo(cx, cy);
+    // Highlight
+    g.fillStyle(0xffffff, 0.22);
+    g.beginPath(); g.moveTo(cx, cy);
+    g.arc(cx, cy, r-6, Phaser.Math.DegToRad(285), Phaser.Math.DegToRad(320), false, 32);
+    g.closePath(); g.fillPath();
+
+    // Border glow
+    g.lineStyle(2, 0xffe082, 0.8);
+    g.beginPath(); g.moveTo(cx, cy);
     g.arc(cx, cy, r, Phaser.Math.DegToRad(270), Phaser.Math.DegToRad(360), false, 64);
-    g.closePath();
-    g.strokePath();
+    g.closePath(); g.strokePath();
 
-    // "1/4" label
-    g.fillStyle(0x000000, 0.55);
-    g.fillRoundedRect(18, 46, 28, 16, 5);
-
-    g.generateTexture('food_quarter', 64, 64);
+    g.generateTexture('food_q', 68, 68);
     g.destroy();
   }
 
-  makeFoodHalf() {
+  /* ── FOOD HALF (watermelon slice, 1/2) ────────────── */
+  mkFoodH() {
     const g = this.make.graphics({ add: false });
-    const cx = 32, cy = 42, r = 28;
+    const cx = 34, cy = 44, r = 30;
 
     // Green rind
     g.fillStyle(0x2e7d32, 1);
-    g.beginPath();
-    g.moveTo(cx - r, cy);
+    g.beginPath(); g.moveTo(cx-r, cy);
     g.arc(cx, cy, r, Math.PI, 0, false, 64);
-    g.closePath();
-    g.fillPath();
+    g.closePath(); g.fillPath();
 
-    // White inner layer
+    // White layer
     g.fillStyle(0xf1f8e9, 1);
-    g.beginPath();
-    g.moveTo(cx - r + 4, cy);
-    g.arc(cx, cy, r - 4, Math.PI, 0, false, 64);
-    g.closePath();
-    g.fillPath();
+    g.beginPath(); g.moveTo(cx-r+4, cy);
+    g.arc(cx, cy, r-4, Math.PI, 0, false, 64);
+    g.closePath(); g.fillPath();
 
     // Red flesh
     g.fillStyle(0xe53935, 1);
-    g.beginPath();
-    g.moveTo(cx - r + 8, cy);
-    g.arc(cx, cy, r - 8, Math.PI, 0, false, 64);
-    g.closePath();
-    g.fillPath();
+    g.beginPath(); g.moveTo(cx-r+9, cy);
+    g.arc(cx, cy, r-9, Math.PI, 0, false, 64);
+    g.closePath(); g.fillPath();
 
     // Seeds
     g.fillStyle(0x1a1a1a, 1);
-    [{x:cx-10,y:cy-11},{x:cx,y:cy-17},{x:cx+10,y:cy-11},{x:cx-5,y:cy-4},{x:cx+5,y:cy-4}]
-      .forEach(s => g.fillEllipse(s.x, s.y, 4, 7));
+    [{x:cx-11,y:cy-11},{x:cx,y:cy-17},{x:cx+11,y:cy-11},{x:cx-5,y:cy-4},{x:cx+5,y:cy-4}]
+      .forEach(s=>g.fillEllipse(s.x, s.y, 4, 7));
 
-    // Shine highlight
-    g.fillStyle(0xffffff, 0.25);
-    g.beginPath();
-    g.moveTo(cx - 12, cy);
-    g.arc(cx, cy, 12, Math.PI, Phaser.Math.DegToRad(220), false, 32);
-    g.closePath();
-    g.fillPath();
+    // Highlight
+    g.fillStyle(0xffffff, 0.2);
+    g.beginPath(); g.moveTo(cx-12, cy);
+    g.arc(cx, cy, 13, Math.PI, Phaser.Math.DegToRad(210), false, 32);
+    g.closePath(); g.fillPath();
 
-    // Glow border
-    g.lineStyle(2, 0x76ff03, 0.5);
-    g.beginPath();
-    g.moveTo(cx - r, cy);
+    // Border glow
+    g.lineStyle(2, 0x76ff03, 0.55);
+    g.beginPath(); g.moveTo(cx-r, cy);
     g.arc(cx, cy, r, Math.PI, 0, false, 64);
-    g.closePath();
-    g.strokePath();
+    g.closePath(); g.strokePath();
 
-    g.generateTexture('food_half', 64, 64);
+    g.generateTexture('food_h', 68, 68);
     g.destroy();
   }
 
-  makeBackground() {
+  /* ── BACKGROUND ─────────────────────────────────────── */
+  mkBackground() {
     const g = this.make.graphics({ add: false });
 
-    // Sky gradient
-    g.fillGradientStyle(0x0d47a1, 0x0d47a1, 0x42a5f5, 0x42a5f5, 1);
-    g.fillRect(0, 0, GW, 320);
+    // Sky
+    g.fillGradientStyle(0x0a237a, 0x0a237a, 0x1565c0, 0x1565c0, 1);
+    g.fillRect(0, 0, GW, 310);
 
     // Sun
-    g.fillStyle(0xfff176, 0.3);
-    g.fillCircle(320, 72, 54);
-    g.fillStyle(0xfff59d, 0.6);
-    g.fillCircle(320, 72, 40);
-    g.fillStyle(0xffee58, 1);
-    g.fillCircle(320, 72, 30);
+    g.fillStyle(0xfff59d, 0.25); g.fillCircle(330, 68, 56);
+    g.fillStyle(0xfff176, 0.6);  g.fillCircle(330, 68, 42);
+    g.fillStyle(0xffee58, 1);    g.fillCircle(330, 68, 32);
+
+    // Stars
+    g.fillStyle(0xffffff, 0.5);
+    [[40,22],[100,8],[195,14],[358,36],[378,10],[130,6]].forEach(([x,y])=>g.fillCircle(x,y,1.8));
 
     // Clouds
     const cloud = (x, y, s) => {
-      g.fillStyle(0xffffff, 0.9);
-      g.fillEllipse(x,      y,    80*s, 38*s);
-      g.fillEllipse(x+34*s, y-12*s, 54*s, 34*s);
-      g.fillEllipse(x-28*s, y+5*s,  44*s, 28*s);
+      g.fillStyle(0xffffff, 0.92);
+      g.fillEllipse(x, y, 82*s, 40*s);
+      g.fillEllipse(x+36*s, y-13*s, 58*s, 36*s);
+      g.fillEllipse(x-30*s, y+5*s, 46*s, 30*s);
     };
-    cloud(70,  75, 1.0);
-    cloud(260, 55, 0.8);
-    cloud(170, 105, 0.65);
+    cloud(72, 78, 0.95); cloud(268, 55, 0.78); cloud(174, 108, 0.6);
 
-    // Star dots (night ambiance)
-    g.fillStyle(0xffffff, 0.55);
-    [[40,25],[90,10],[200,18],[340,40],[380,15],[140,8]].forEach(([x,y]) => g.fillCircle(x,y,1.6));
+    // Delivery zone (top of play area) — slightly lighter tint
+    g.fillStyle(0x1565c0, 0.12); g.fillRect(0, 280, GW, 160);
 
     // Ground base
-    g.fillGradientStyle(0x1b5e20, 0x1b5e20, 0x2e7d32, 0x2e7d32, 1);
-    g.fillRect(0, 295, GW, GH - 295);
+    g.fillGradientStyle(0x1a5c26, 0x1a5c26, 0x2e7d32, 0x2e7d32, 1);
+    g.fillRect(0, 300, GW, GH - 300);
 
-    // Grass edge
-    g.fillStyle(0x43a047, 1);
-    g.fillRect(0, 290, GW, 18);
-
-    // Grass texture
-    for (let x = 0; x < GW; x += 8) {
-      g.fillStyle(0x4caf50, 0.4);
-      g.fillTriangle(x, 295, x+4, 282, x+8, 295);
+    // Grass edge row
+    g.fillStyle(0x43a047, 1); g.fillRect(0, 294, GW, 16);
+    for (let x = 0; x < GW; x += 9) {
+      g.fillStyle(0x66bb6a, 0.5);
+      g.fillTriangle(x, 296, x+4.5, 282, x+9, 296);
     }
 
     // Hills
-    g.fillStyle(0x2e7d32, 1);
-    g.fillEllipse(65, 300, 190, 70);
-    g.fillStyle(0x388e3c, 1);
-    g.fillEllipse(320, 295, 170, 62);
+    g.fillStyle(0x2e7d32, 1); g.fillEllipse(65, 307, 200, 70);
+    g.fillStyle(0x388e3c, 1); g.fillEllipse(332, 300, 176, 64);
 
     // Trees
     const tree = (x, y, s=1) => {
-      g.fillStyle(0x5d4037, 1);
-      g.fillRoundedRect(x-5*s, y+12*s, 10*s, 42*s, 3);
-      g.fillStyle(0x1b5e20, 1);
-      g.fillCircle(x, y, 32*s);
-      g.fillStyle(0x2e7d32, 1);
-      g.fillCircle(x-15*s, y+8*s, 22*s);
-      g.fillStyle(0x388e3c, 1);
-      g.fillCircle(x+13*s, y+6*s, 19*s);
+      g.fillStyle(0x5d4037, 1); g.fillRoundedRect(x-5*s, y+12*s, 10*s, 44*s, 3);
+      g.fillStyle(0x1b5e20, 1); g.fillCircle(x, y, 32*s);
+      g.fillStyle(0x2e7d32, 1); g.fillCircle(x-16*s, y+9*s, 22*s);
+      g.fillStyle(0x388e3c, 1); g.fillCircle(x+13*s, y+7*s, 18*s);
     };
-    tree(28,  262, 0.9);
-    tree(362, 258, 0.85);
-    tree(145, 265, 0.78);
-    tree(248, 258, 0.88);
+    tree(26, 264, 0.88); tree(366, 258, 0.82); tree(140, 266, 0.76); tree(248, 260, 0.86);
 
     // Flowers
-    const fcols = [0xFF80AB, 0xFFD54F, 0xFF7043, 0xE040FB, 0x40C4FF];
-    for (let i = 0; i < 18; i++) {
-      g.fillStyle(fcols[i % 5], 0.9);
-      const fx = 14 + ((i * 20) % 364);
-      const fy = 300 + ((i * 7) % 25);
-      g.fillCircle(fx, fy, 4);
-      g.fillStyle(0xffffff, 0.8);
-      g.fillCircle(fx, fy, 1.8);
+    const fc = [0xFF80AB,0xFFD54F,0xFF7043,0xE040FB,0x40C4FF];
+    for (let i=0; i<20; i++) {
+      g.fillStyle(fc[i%5], 0.88);
+      const fx=12+((i*19)%368), fy=305+((i*7)%24);
+      g.fillCircle(fx, fy, 4.5); g.fillStyle(0xffffff, 0.7); g.fillCircle(fx, fy, 2);
     }
+
+    // Delivery zone label line
+    g.lineStyle(1, 0xffffff, 0.1); g.strokeLineShape(new Phaser.Geom.Line(0, 440, GW, 440));
 
     g.generateTexture('bg', GW, GH);
     g.destroy();
-  }
 
-  makeJoystick() {
-    // Base
-    {
-      const g = this.make.graphics({ add: false });
-      g.fillStyle(0xffffff, 0.07);
-      g.fillCircle(62, 62, 62);
-      g.lineStyle(2, 0xffffff, 0.2);
-      g.strokeCircle(62, 62, 62);
-      g.lineStyle(1, 0xffffff, 0.1);
-      g.strokeCircle(62, 62, 34);
-      // Direction arrows
-      g.fillStyle(0xffffff, 0.14);
-      g.fillTriangle(62,10, 56,22, 68,22);   // up
-      g.fillTriangle(62,114,56,102,68,102);  // down
-      g.fillTriangle(10,62, 22,56, 22,68);   // left
-      g.fillTriangle(114,62,102,56,102,68);  // right
-      g.generateTexture('joy_base', 124, 124);
-      g.destroy();
-    }
-    // Thumb
-    {
-      const g = this.make.graphics({ add: false });
-      g.fillStyle(0xffffff, 0.13);
-      g.fillCircle(36, 36, 36);
-      g.fillStyle(0xffffff, 0.5);
-      g.fillCircle(36, 36, 28);
-      g.fillStyle(0xffffff, 0.2);
-      g.fillEllipse(28, 26, 22, 16);
-      g.generateTexture('joy_thumb', 72, 72);
-      g.destroy();
-    }
-    // Deliver button
-    {
-      const g = this.make.graphics({ add: false });
-      g.fillStyle(0xf57f17, 0.2);
-      g.fillCircle(54, 54, 54);
-      g.fillStyle(0xe65100, 1);
-      g.fillCircle(54, 54, 48);
-      g.fillStyle(0xff6d00, 1);
-      g.fillCircle(54, 54, 42);
-      // Egg icon on button
-      g.fillStyle(0xfffde7, 1);
-      g.fillEllipse(54, 52, 28, 36);
-      g.fillStyle(0x4caf50, 1);
-      g.fillCircle(48,44,3); g.fillCircle(58,48,3); g.fillCircle(52,57,3);
-      g.fillStyle(0xffffff, 0.4);
-      g.fillEllipse(48, 42, 12, 16);
-      g.generateTexture('deliver_btn', 108, 108);
-      g.destroy();
-    }
-  }
+    // Particle textures
+    const p = this.make.graphics({ add: false });
+    p.fillStyle(0xffd700, 1); p.fillCircle(5, 5, 5);
+    p.generateTexture('pt', 10, 10); p.destroy();
 
-  makeParticles() {
-    // Gold orb
-    const g = this.make.graphics({ add: false });
-    g.fillStyle(0xFFD700, 1);
-    g.fillCircle(5, 5, 5);
-    g.generateTexture('particle', 10, 10);
-    g.destroy();
-
-    // Green spark
-    const g2 = this.make.graphics({ add: false });
-    g2.fillStyle(0x2ecc71, 1);
-    g2.fillCircle(4, 4, 4);
-    g2.generateTexture('spark', 8, 8);
-    g2.destroy();
-
-    // Confetti pieces (5 colors)
-    const cols = [0xFF69B4,0x40C4FF,0x69F0AE,0xFFD740,0xFF6D00];
-    cols.forEach((c, i) => {
+    [0xff69b4,0x40c4ff,0x69f0ae,0xffd740,0xff6d00].forEach((c,i)=>{
       const cg = this.make.graphics({ add: false });
-      cg.fillStyle(c, 1);
-      cg.fillRect(0, 0, 9, 9);
-      cg.generateTexture(`conf${i}`, 9, 9);
-      cg.destroy();
+      cg.fillStyle(c, 1); cg.fillRect(0, 0, 9, 9);
+      cg.generateTexture(`cf${i}`, 9, 9); cg.destroy();
     });
+  }
+
+  /* ── UI ELEMENTS ─────────────────────────────────────── */
+  mkUI() {
+    // Joystick base
+    { const g = this.make.graphics({ add: false });
+      g.fillStyle(0xffffff, 0.06); g.fillCircle(64, 64, 64);
+      g.lineStyle(2, 0xffffff, 0.18); g.strokeCircle(64, 64, 64);
+      g.lineStyle(1, 0xffffff, 0.09); g.strokeCircle(64, 64, 34);
+      g.fillStyle(0xffffff, 0.12);
+      g.fillTriangle(64,11,58,23,70,23); g.fillTriangle(64,117,58,105,70,105);
+      g.fillTriangle(11,64,23,58,23,70); g.fillTriangle(117,64,105,58,105,70);
+      g.generateTexture('joy_base', 128, 128); g.destroy(); }
+
+    // Joystick thumb
+    { const g = this.make.graphics({ add: false });
+      g.fillStyle(0xffffff, 0.12); g.fillCircle(38, 38, 38);
+      g.fillStyle(0xffffff, 0.52); g.fillCircle(38, 38, 30);
+      g.fillStyle(0xffffff, 0.22); g.fillEllipse(30, 28, 24, 18);
+      g.generateTexture('joy_thumb', 76, 76); g.destroy(); }
+
+    // Deliver button
+    { const g = this.make.graphics({ add: false });
+      g.fillStyle(0xf57f17, 0.18); g.fillCircle(56, 56, 56);
+      g.fillStyle(0xe65100, 1);    g.fillCircle(56, 56, 50);
+      g.fillStyle(0xff6d00, 1);    g.fillCircle(56, 56, 44);
+      g.fillStyle(0xfffde7, 1);    g.fillEllipse(56, 53, 32, 40);
+      g.fillStyle(0x43a047, 1);
+      g.fillCircle(49,45,3.5); g.fillCircle(61,50,3.5); g.fillCircle(54,60,3.5);
+      g.fillStyle(0xffffff, 0.4); g.fillEllipse(49, 43, 14, 20);
+      g.generateTexture('deliver_btn', 112, 112); g.destroy(); }
+  }
+
+  /* ── PARTICLES ───────────────────────────────────────── */
+  mkParticles() {
+    const g2 = this.make.graphics({ add: false });
+    g2.fillStyle(0x69f0ae, 1); g2.fillCircle(4, 4, 4);
+    g2.generateTexture('spark', 8, 8); g2.destroy();
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   SCENE: GAME
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   GAME SCENE
+══════════════════════════════════════════════════════════ */
 class GameScene extends Phaser.Scene {
   constructor() { super({ key: 'Game' }); }
 
   create() {
     activeScene = this;
 
-    // Background
-    this.add.image(GW / 2, GH / 2, 'bg').setDepth(0);
+    this.add.image(GW/2, GH/2, 'bg').setDepth(0);
 
-    // World physics bounds (play area below the nest zone)
-    this.physics.world.setBounds(0, 290, GW, GH - 290 - 90);
+    // Play-area physics bounds
+    this.physics.world.setBounds(4, 295, GW-8, GH-295-92);
 
-    // ── NEST (static)
-    this.nest = this.physics.add.staticSprite(GW / 2, 360, 'nest')
-      .setDisplaySize(112, 96).setDepth(4);
-    this.nest.refreshBody();
+    // Zone labels
+    this.add.text(GW/2, 306, '🥚  ZONA DE ENTREGA — lleva la comida aquí', {
+      fontSize: '12px', color: 'rgba(255,255,255,0.35)', fontFamily: 'Fredoka One',
+      stroke: '#000', strokeThickness: 2
+    }).setOrigin(0.5).setDepth(2);
+    this.add.text(GW/2, 448, '🍕  ZONA DE RECOLECCIÓN', {
+      fontSize: '12px', color: 'rgba(255,255,255,0.3)', fontFamily: 'Fredoka One',
+      stroke: '#000', strokeThickness: 2
+    }).setOrigin(0.5).setDepth(2);
 
-    // ── YOSHI
-    this.yoshi = this.physics.add.sprite(GW / 2, 560, 'yoshi_a')
-      .setDisplaySize(96, 76)
+    // Nest
+    this.nest = this.add.image(NEST_X, NEST_Y, 'nest')
+      .setDisplaySize(120, 104).setDepth(4);
+
+    // Nest landing glow (pulsing ring, shows when amt matches target)
+    this.nestGlow = this.add.graphics().setDepth(3);
+    this.nestGlowAlpha = 0;
+
+    // Yoshi
+    this.yoshi = this.physics.add.sprite(YOSHI_START_X, YOSHI_START_Y, 'yoshi_a')
+      .setDisplaySize(100, 80)
       .setCollideWorldBounds(true)
       .setDepth(10);
+    this.yoshi.body.setSize(52, 38).setOffset(24, 30);
 
-    // Walk animation
-    this.anims.create({
-      key: 'walk', frames: [{ key: 'yoshi_a' }, { key: 'yoshi_b' }],
-      frameRate: 8, repeat: -1
-    });
-    this.anims.create({
-      key: 'idle', frames: [{ key: 'yoshi_a' }], frameRate: 1, repeat: -1
-    });
+    this.anims.create({ key:'walk', frames:[{key:'yoshi_a'},{key:'yoshi_b'}], frameRate:8, repeat:-1 });
+    this.anims.create({ key:'idle', frames:[{key:'yoshi_a'}], frameRate:1, repeat:-1 });
     this.yoshi.anims.play('idle');
 
-    // ── FOOD GROUP
+    // Food group
     this.foods = this.physics.add.group();
 
-    // ── STATE
-    this.score        = 0;
-    this.eggs         = 0;
-    this.currentAmt   = 0;
-    this.targetAmt    = 0.5;
-    this.gamePaused   = true;
-    this.panelOpen    = false;
+    // Overlap (food collection)
+    this.physics.add.overlap(this.yoshi, this.foods, this.onCollect, null, this);
 
-    // ── HUD setup
+    // State
+    this.collected  = 0;
+    this.targetAmt  = 0;
+    this.playerPlan = 0;
+    this.paused     = true;
+    this.panelOpen  = false;
+    this.score      = 0;
+    this.eggs       = 0;
+
+    // HUD
     this.setupHUD();
 
-    // ── CONTROLS
+    // Controls
     this.setupControls();
 
-    // ── Keyboard fallback
+    // Keyboard
     this.cursors = this.input.keyboard.createCursorKeys();
     this.wasd    = this.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.W,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      left: Phaser.Input.Keyboard.KeyCodes.A,
+      up:    Phaser.Input.Keyboard.KeyCodes.W,
+      down:  Phaser.Input.Keyboard.KeyCodes.S,
+      left:  Phaser.Input.Keyboard.KeyCodes.A,
       right: Phaser.Input.Keyboard.KeyCodes.D
     });
 
-    // ── Overlap: Yoshi collects food
-    this.physics.add.overlap(this.yoshi, this.foods, this.onCollect, null, this);
-
-    // ── Begin first mission (called from outside after think panel)
-    this.beginMission(MISSIONS[currentMissionIndex]);
+    // Begin
+    this.beginLevel(LEVELS[currentLevel], planSel);
   }
 
-  /* ────────────────── HUD ────────────────── */
+  /* ── HUD ────────────────────────────────────────────── */
   setupHUD() {
-    const depth = 15;
+    const d = 15;
 
-    // Top HUD bar
-    const hudBg = this.add.graphics().setDepth(depth - 1);
-    hudBg.fillStyle(0x000000, 0.55);
-    hudBg.fillRoundedRect(0, 0, GW, 86, { tl: 0, tr: 0, bl: 22, br: 22 });
+    // Top bar bg
+    const hb = this.add.graphics().setDepth(d-1);
+    hb.fillStyle(0x000000, 0.6);
+    hb.fillRoundedRect(0, 0, GW, 90, {tl:0,tr:0,bl:24,br:24});
 
-    this.txtMission = this.add.text(GW / 2, 12, '', {
-      fontSize: '17px', color: '#FFD740', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 4
-    }).setOrigin(0.5, 0).setDepth(depth);
+    this.txtGoal = this.add.text(GW/2, 10, '', {
+      fontSize:'17px', color:'#ffd740', fontFamily:'Fredoka One',
+      stroke:'#000', strokeThickness:4
+    }).setOrigin(0.5, 0).setDepth(d);
 
-    this.txtScore = this.add.text(GW - 12, 12, '🌟 0', {
-      fontSize: '19px', color: '#fff', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3
-    }).setOrigin(1, 0).setDepth(depth);
+    this.txtScore = this.add.text(GW-10, 10, '🌟 0', {
+      fontSize:'18px', color:'#fff', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
+    }).setOrigin(1,0).setDepth(d);
 
-    this.txtEggs = this.add.text(12, 12, '🥚 0', {
-      fontSize: '19px', color: '#fff', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3
-    }).setOrigin(0, 0).setDepth(depth);
+    this.txtEggs = this.add.text(10, 10, '🥚 0', {
+      fontSize:'18px', color:'#fff', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
+    }).setOrigin(0,0).setDepth(d);
 
-    // Gauge: 4 quarter slots in HUD
-    this.gaugeGfx  = this.add.graphics().setDepth(depth);
-    this.txtGauge  = this.add.text(GW / 2, 62, '', {
-      fontSize: '15px', color: '#ffffff', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(depth + 1);
+    // Gauge
+    this.gaugeGfx = this.add.graphics().setDepth(d);
+    this.txtGauge = this.add.text(GW/2, 64, '', {
+      fontSize:'14px', color:'#fff', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
+    }).setOrigin(0.5).setDepth(d+1);
 
-    this.refreshHUD();
+    // Bottom control shelf
+    const shelf = this.add.graphics().setDepth(18);
+    shelf.fillStyle(0x000000, 0.6);
+    shelf.fillRect(0, GH-160, GW, 160);
+
+    // "Mover" hint
+    this.add.text(108, GH-147, '🕹️ MOVER', {
+      fontSize:'12px', color:'rgba(255,255,255,0.4)', fontFamily:'Fredoka One'
+    }).setOrigin(0.5).setDepth(22);
+
+    // "Entregar" hint
+    this.add.text(GW-70, GH-55, '¡ENTREGAR!', {
+      fontSize:'13px', color:'#ffd740', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
+    }).setOrigin(0.5).setDepth(22);
   }
 
   refreshHUD() {
-    const m = MISSIONS[currentMissionIndex];
-    this.txtMission.setText(`🎯 Come exactamente: ${m.display}`);
+    const lvl = LEVELS[currentLevel];
+    this.txtGoal.setText(`🎯 Come exactamente: ${lvl.display}`);
     this.txtScore.setText(`🌟 ${this.score}`);
     this.txtEggs.setText(`🥚 ${this.eggs}`);
     this.drawGauge();
+    this.updateNestGlow();
   }
 
   drawGauge() {
-    const g = this.gaugeGfx;
+    const lvl   = LEVELS[currentLevel];
+    const maxQ  = lvl.maxTiles;    // 4 or 8
+    const slotW = maxQ <= 4 ? 42 : 22;
+    const slotH = 26;
+    const gap   = maxQ <= 4 ? 8 : 4;
+    const totalW = maxQ * slotW + (maxQ-1) * gap;
+    const startX = GW/2 - totalW/2;
+    const y      = 43;
+    const g      = this.gaugeGfx;
     g.clear();
 
-    const slotW = 36, slotH = 30, gap = 8;
-    const totalW = 4 * slotW + 3 * gap;
-    const startX = GW / 2 - totalW / 2;
-    const y = 44;
+    for (let i = 0; i < maxQ; i++) {
+      const x = startX + i * (slotW + gap);
+      const thr = (i+1) * 0.25;
+      const full = this.collected >= thr - 0.002;
 
-    for (let i = 0; i < 4; i++) {
-      const x     = startX + i * (slotW + gap);
-      const threshold = (i + 1) * 0.25;
-      const filled = this.currentAmt >= threshold - 0.001;
-
-      // Background slot
       g.fillStyle(0xffffff, 0.08);
-      g.fillRoundedRect(x, y, slotW, slotH, 7);
+      g.fillRoundedRect(x, y, slotW, slotH, 6);
 
-      // Fill
-      if (filled) {
+      if (full) {
         g.fillStyle(0x2ecc71, 1);
-        g.fillRoundedRect(x + 2, y + 2, slotW - 4, slotH - 4, 5);
+        g.fillRoundedRect(x+2, y+2, slotW-4, slotH-4, 4);
       }
 
-      // Border
-      g.lineStyle(2, filled ? 0x2ecc71 : 0xffffff, filled ? 1 : 0.25);
-      g.strokeRoundedRect(x, y, slotW, slotH, 7);
+      // Plan overlay (shows player's plan)
+      const planMark = i < this.playerPlan;
+      if (!full && planMark) {
+        g.fillStyle(0xffd740, 0.2);
+        g.fillRoundedRect(x+2, y+2, slotW-4, slotH-4, 4);
+      }
+
+      // Divider at slot 4 (for improper)
+      if (maxQ > 4 && i === 3) {
+        g.lineStyle(1.5, 0xffd740, 0.35);
+        g.strokeLineShape(new Phaser.Geom.Line(x+slotW+gap/2, y-4, x+slotW+gap/2, y+slotH+4));
+      }
+
+      g.lineStyle(1.5, full ? 0x2ecc71 : 0xffffff, full ? 0.9 : 0.2);
+      g.strokeRoundedRect(x, y, slotW, slotH, 6);
     }
 
-    const frac = this.toFrac(this.currentAmt);
-    const tgt  = MISSIONS[currentMissionIndex].display;
-    this.txtGauge.setText(`${frac}  /  ${tgt}`);
+    const colStr = numToStr(this.collected);
+    const tgtStr = LEVELS[currentLevel].display;
+    this.txtGauge.setText(`${colStr}  /  ${tgtStr}`);
   }
 
-  toFrac(v) {
-    if (v <= 0)    return 'Vacío 🦕';
-    if (v === 0.25) return '1/4';
-    if (v === 0.5)  return '1/2';
-    if (v === 0.75) return '3/4';
-    if (v >= 1.0)   return '1 Entero';
-    if (v > 1)      return `${v.toFixed(2)} ⚠️`;
-    return `${v.toFixed(2)}`;
+  updateNestGlow() {
+    const match = Math.abs(this.collected - this.targetAmt) < 0.005;
+    this.nestGlowTarget = match ? 1 : 0;
   }
 
-  /* ────────────────── CONTROLS ────────────────── */
+  /* ── CONTROLS ────────────────────────────────────────── */
   setupControls() {
-    // Multi-touch support
     this.input.addPointer(3);
 
-    // Virtual joystick
-    this.joyBase  = this.add.image(108, GH - 118, 'joy_base')
-      .setDepth(20).setAlpha(0.82).setDisplaySize(124, 124);
-    this.joyThumb = this.add.image(108, GH - 118, 'joy_thumb')
-      .setDepth(21).setAlpha(0.9).setDisplaySize(72, 72);
+    // Joystick
+    this.joyBase  = this.add.image(108, GH-108, 'joy_base').setDepth(20).setDisplaySize(128,128).setAlpha(0.8);
+    this.joyThumb = this.add.image(108, GH-108, 'joy_thumb').setDepth(21).setDisplaySize(76,76).setAlpha(0.88);
+    this.joyActive=false; this.joyPid=-1; this.joyBX=108; this.joyBY=GH-108; this.joyDX=0; this.joyDY=0;
+    this.nestGlowTarget = 0;
 
-    this.joyActive = false;
-    this.joyPtrId  = -1;
-    this.joyBX = 108; this.joyBY = GH - 118;
-    this.joyDX = 0;   this.joyDY = 0;
-
-    // Left zone for joystick
-    const leftZone = this.add.zone(0, GH - 230, 230, 230)
-      .setOrigin(0, 0).setInteractive().setDepth(25);
-
-    leftZone.on('pointerdown', (ptr) => {
+    const leftZ = this.add.zone(0, GH-230, 240, 230).setOrigin(0,0).setInteractive().setDepth(25);
+    leftZ.on('pointerdown', ptr=>{
       if (this.joyActive) return;
-      this.joyActive = true;
-      this.joyPtrId  = ptr.id;
-      this.joyBX = ptr.x; this.joyBY = ptr.y;
+      this.joyActive=true; this.joyPid=ptr.id;
+      this.joyBX=ptr.x; this.joyBY=ptr.y;
       this.joyBase.setPosition(ptr.x, ptr.y);
       this.joyThumb.setPosition(ptr.x, ptr.y);
     });
-
-    this.input.on('pointermove', (ptr) => {
-      if (!this.joyActive || ptr.id !== this.joyPtrId) return;
-      const dx = ptr.x - this.joyBX;
-      const dy = ptr.y - this.joyBY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const max  = 46;
-      const nx   = (dx / Math.max(dist, 1));
-      const ny   = (dy / Math.max(dist, 1));
-      const clamp = Math.min(dist, max);
-      this.joyDX = nx * clamp;
-      this.joyDY = ny * clamp;
-      this.joyThumb.setPosition(this.joyBX + this.joyDX, this.joyBY + this.joyDY);
+    this.input.on('pointermove', ptr=>{
+      if (!this.joyActive||ptr.id!==this.joyPid) return;
+      const dx=ptr.x-this.joyBX, dy=ptr.y-this.joyBY;
+      const dist=Math.sqrt(dx*dx+dy*dy), max=48;
+      this.joyDX=(dx/Math.max(dist,1))*Math.min(dist,max);
+      this.joyDY=(dy/Math.max(dist,1))*Math.min(dist,max);
+      this.joyThumb.setPosition(this.joyBX+this.joyDX, this.joyBY+this.joyDY);
+    });
+    this.input.on('pointerup', ptr=>{
+      if (ptr.id!==this.joyPid) return;
+      this.joyActive=false; this.joyPid=-1; this.joyDX=0; this.joyDY=0;
+      this.tweens.add({targets:this.joyThumb, x:this.joyBase.x, y:this.joyBase.y, duration:110});
     });
 
-    this.input.on('pointerup', (ptr) => {
-      if (ptr.id !== this.joyPtrId) return;
-      this.joyActive = false;
-      this.joyPtrId  = -1;
-      this.joyDX = 0; this.joyDY = 0;
-      this.tweens.add({
-        targets: this.joyThumb,
-        x: this.joyBase.x, y: this.joyBase.y,
-        duration: 120, ease: 'Power2'
-      });
-    });
+    // Deliver button
+    this.deliverBtn = this.add.image(GW-72, GH-102, 'deliver_btn')
+      .setDepth(20).setDisplaySize(112,112).setInteractive().setAlpha(0.9);
+    this.deliverBtn.on('pointerdown', ()=>{ if (!this.paused) this.tryDeliver(); });
 
-    // Deliver button (right)
-    this.deliverBtn = this.add.image(GW - 68, GH - 108, 'deliver_btn')
-      .setDepth(20).setDisplaySize(108, 108).setInteractive().setAlpha(0.9);
-
-    this.deliverBtn.on('pointerdown', () => { if (!this.gamePaused) this.tryDeliver(); });
-
-    this.add.text(GW - 68, GH - 48, '¡Entregar!', {
-      fontSize: '13px', color: '#FFD740', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(21);
+    // Arrow toward nest (when exact amount collected)
+    this.nestArrow = this.add.text(NEST_X, NEST_Y + 68, '▲', {
+      fontSize:'20px', color:'#ffd740', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
+    }).setOrigin(0.5).setDepth(8).setAlpha(0);
+    this.tweens.add({ targets: this.nestArrow, y: NEST_Y+58, duration:500, yoyo:true, repeat:-1 });
   }
 
-  /* ────────────────── MISSION ────────────────── */
-  beginMission(mission) {
-    this.targetAmt  = mission.target;
-    this.currentAmt = 0;
-    this.gamePaused = false;
+  /* ── BEGIN LEVEL ─────────────────────────────────────── */
+  beginLevel(lvl, plan) {
+    this.targetAmt  = lvl.target;
+    this.playerPlan = plan;
+    this.collected  = 0;
+    this.paused     = false;
     this.panelOpen  = false;
-    this.spawnFood();
+
+    // Reset Yoshi position
+    this.yoshi.setPosition(YOSHI_START_X, YOSHI_START_Y);
+    this.yoshi.setVelocity(0, 0);
+
+    this.spawnFood(lvl);
     this.refreshHUD();
-    this.cameras.main.flash(180, 46, 204, 113, false);
+    this.cameras.main.flash(150, 46, 204, 113, false);
   }
 
-  spawnFood() {
+  /* ── SPAWN FOOD ───────────────────────────────────────── */
+  spawnFood(lvl) {
     this.foods.clear(true, true);
-    // Remove any lingering food labels
+    // Remove floating labels
     this.children.list
-      .filter(c => c.getData && c.getData('foodLabel'))
+      .filter(c => c.getData && c.getData('fLabel'))
       .forEach(c => c.destroy());
 
     const taken = [];
+    const MIN_NEST  = 168;
+    const MIN_YOSHI = 115;
+    const MIN_FOOD  = 90;
+
     const getPos = () => {
       let x, y, tries = 0;
       do {
-        x = Phaser.Math.Between(60, GW - 60);
-        y = Phaser.Math.Between(430, GH - 160);
+        x = Phaser.Math.Between(55, GW-55);
+        y = Phaser.Math.Between(470, GH-175);
         tries++;
-      } while (taken.some(p => Math.hypot(p.x - x, p.y - y) < 70) && tries < 30);
-      taken.push({ x, y });
-      return { x, y };
+        const dNest  = Math.hypot(x-NEST_X, y-NEST_Y);
+        const dYoshi = Math.hypot(x-YOSHI_START_X, y-YOSHI_START_Y);
+        const dFood  = taken.every(p=>Math.hypot(p.x-x,p.y-y) > MIN_FOOD);
+        if (dNest > MIN_NEST && dYoshi > MIN_YOSHI && dFood) break;
+      } while (tries < 60);
+      taken.push({x, y});
+      return {x, y};
     };
 
-    // 4 quarter pieces
-    for (let i = 0; i < 4; i++) {
-      this.addFoodItem('food_quarter', 0.25, '1/4', getPos());
-    }
-    // 2 half pieces
-    for (let i = 0; i < 2; i++) {
-      this.addFoodItem('food_half', 0.5, '1/2', getPos());
-    }
+    for (let i = 0; i < lvl.food.q; i++) this.addFood('food_q', 0.25, '¼', getPos());
+    for (let i = 0; i < lvl.food.h; i++) this.addFood('food_h', 0.50, '½', getPos());
   }
 
-  addFoodItem(texture, value, label, { x, y }) {
-    const food = this.foods.create(x, y, texture)
-      .setDisplaySize(58, 58)
-      .setData('value', value)
-      .setData('label', label)
-      .setDepth(5);
+  addFood(tex, val, lbl, {x, y}) {
+    const food = this.foods.create(x, y, tex)
+      .setDisplaySize(62, 62).setDepth(5)
+      .setData('val', val).setData('lbl', lbl);
+    // Small hitbox (prevents accidental collection)
+    food.body.setSize(28, 28).setOffset(20, 20);
 
-    // Glow ring using graphics
-    const glow = this.add.graphics().setDepth(4);
-    glow.lineStyle(3, value === 0.5 ? 0x76ff03 : 0xffe082, 0.4);
-    glow.strokeCircle(x, y, 34);
-    food.setData('glowRef', glow);
+    // Glow ring
+    const gfx = this.add.graphics().setDepth(4);
+    gfx.lineStyle(3, val===0.5 ? 0x76ff03 : 0xffe082, 0.4);
+    gfx.strokeCircle(x, y, 36);
+    food.setData('gfx', gfx);
 
     // Floating tween
     const baseY = y;
     this.tweens.add({
-      targets: food, y: baseY - 9,
-      duration: 780 + Math.random() * 360,
+      targets: food, y: baseY - 10,
+      duration: 820 + Math.random()*360,
       yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
       onUpdate: () => {
-        glow.clear();
-        glow.lineStyle(3, value === 0.5 ? 0x76ff03 : 0xffe082, 0.35);
-        glow.strokeCircle(food.x, food.y, 34);
+        gfx.clear();
+        gfx.lineStyle(3, val===0.5?0x76ff03:0xffe082, 0.35);
+        gfx.strokeCircle(food.x, food.y, 36);
       }
     });
 
-    // Fraction label above food
-    const lbl = this.add.text(x, y - 38, label, {
-      fontSize: '15px', color: '#FFD740', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3
-    }).setOrigin(0.5).setDepth(6).setData('foodLabel', true);
-
-    food.setData('labelRef', lbl);
+    // Label (follows food)
+    const lt = this.add.text(x, y-42, lbl, {
+      fontSize:'16px', color:'#ffd740', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
+    }).setOrigin(0.5).setDepth(6).setData('fLabel', true);
+    food.setData('lbl_obj', lt);
   }
 
-  /* ────────────────── COLLECT ────────────────── */
+  /* ── COLLECT FOOD ─────────────────────────────────────── */
   onCollect(yoshi, food) {
-    if (this.gamePaused || this.panelOpen) return;
+    if (this.paused || this.panelOpen) return;
 
-    const val   = food.getData('value');
-    const label = food.getData('label');
-    const fx = food.x, fy = food.y;
+    const val = food.getData('val');
+    const lbl = food.getData('lbl');
+    const fx=food.x, fy=food.y;
 
-    // Destroy glow + label
-    const glow = food.getData('glowRef');
-    const lbl  = food.getData('labelRef');
-    if (glow) glow.destroy();
-    if (lbl)  lbl.destroy();
+    food.getData('gfx')?.destroy();
+    food.getData('lbl_obj')?.destroy();
     food.destroy();
 
-    this.currentAmt = Math.round((this.currentAmt + val) * 1000) / 1000;
+    this.collected = Math.round((this.collected + val) * 1000) / 1000;
 
-    // Burst particles
-    this.burstAt(fx, fy, 'particle', 0xFFD700);
-    this.floatText(fx, fy, `+${label}`, '#FFD740');
-    playSound('collect');
+    this.burstAt(fx, fy, 'pt', 0xffd700);
+    this.floatText(fx, fy, `+${lbl}`, '#ffd740');
+    snd('collect');
     this.refreshHUD();
 
-    // Over-eaten?
-    if (this.currentAmt > this.targetAmt + 0.005) {
+    // Nest arrow hint
+    const match = Math.abs(this.collected - this.targetAmt) < 0.005;
+    this.tweens.add({ targets: this.nestArrow, alpha: match ? 1 : 0, duration: 300 });
+
+    // Over-collected
+    if (this.collected > this.targetAmt + 0.005) {
+      this.tweens.add({ targets: this.nestArrow, alpha: 0, duration: 200 });
       this.doStomachache();
     }
   }
 
-  /* ────────────────── DELIVER ────────────────── */
+  /* ── TRY DELIVER ──────────────────────────────────────── */
   tryDeliver() {
-    if (this.gamePaused || this.panelOpen) return;
+    if (this.paused || this.panelOpen) return;
 
-    if (this.currentAmt <= 0) {
-      this.floatText(GW / 2, GH / 2 - 80, '¡Recoge comida primero! 🍕', '#FFF9C4');
+    if (this.collected <= 0) {
+      this.floatText(GW/2, GH/2-70, '🍕 ¡Recoge comida primero!', '#fff9c4');
       return;
     }
 
-    const diff = Math.abs(this.currentAmt - this.targetAmt);
+    const diff = Math.abs(this.collected - this.targetAmt);
 
     if (diff < 0.005) {
       this.doVictory();
-    } else if (this.currentAmt < this.targetAmt) {
-      const need = this.toFrac(Math.round((this.targetAmt - this.currentAmt) * 1000) / 1000);
-      this.floatText(GW / 2, GH / 2 - 60, `¡Falta ${need} más! 🍕`, '#FFF176');
-      this.cameras.main.shake(160, 0.005);
+    } else if (this.collected < this.targetAmt) {
+      const need = numToStr(Math.round((this.targetAmt - this.collected)*1000)/1000);
+      this.floatText(GW/2, NEST_Y, `¡Falta ${need} más!`, '#fff176');
+      this.cameras.main.shake(140, 0.004);
     } else {
       this.doStomachache();
     }
   }
 
-  /* ────────────────── VICTORY ────────────────── */
+  /* ── VICTORY ──────────────────────────────────────────── */
   doVictory() {
-    this.gamePaused = true;
-    this.panelOpen  = true;
-    this.score += 150;
-    this.eggs  += 1;
-    playSound('victory');
+    this.paused=true; this.panelOpen=true;
+    this.score += 150; this.eggs++;
+    snd('victory');
 
+    this.tweens.add({ targets: this.nestArrow, alpha:0, duration:200 });
     this.cameras.main.flash(500, 46, 204, 113, false);
 
-    // Confetti rain
-    for (let i = 0; i < 5; i++) {
-      const em = this.add.particles(Phaser.Math.Between(20, GW - 20), -10, `conf${i}`, {
-        speedY: { min: 180, max: 380 },
-        speedX: { min: -60, max: 60 },
-        scale: { start: 1.2, end: 0.5 },
-        lifespan: 2200,
-        frequency: 60,
-        rotate: { min: 0, max: 360 },
-        gravityY: 180
+    // Confetti
+    for (let i=0;i<5;i++) {
+      const em = this.add.particles(Phaser.Math.Between(20,GW-20), -10, `cf${i}`, {
+        speedY:{min:180,max:380}, speedX:{min:-60,max:60},
+        scale:{start:1.2,end:0.5}, lifespan:2200,
+        frequency:55, rotate:{min:0,max:360}, gravityY:180
       });
-      this.time.delayedCall(2600, () => em.destroy());
+      this.time.delayedCall(2600, ()=>em.destroy());
     }
+    this.tweens.add({targets:this.nest, scaleY:1.12, scaleX:0.9, duration:110, yoyo:true, repeat:2});
 
-    // Nest bounce
-    this.tweens.add({ targets: this.nest, scaleY: 1.15, scaleX: 0.9, duration: 120, yoyo: true, repeat: 2 });
+    const wasCorrectPlan = this.playerPlan === LEVELS[currentLevel].targetQ;
 
-    this.time.delayedCall(500, () => {
-      const mission = MISSIONS[currentMissionIndex];
+    this.time.delayedCall(450, ()=>{
+      const planNote = wasCorrectPlan
+        ? '¡Y tu plan fue perfecto! 🎯'
+        : `Tu plan era ${qToStr(this.playerPlan)}, pero ¡lo lograste!`;
       this.showPanel(
         '🥚 ¡Huevo Desbloqueado!',
-        `¡Yoshi comió exactamente ${mission.display}!\n+150 puntos · Huevo #${this.eggs}`,
+        `¡Yoshi comió exactamente ${LEVELS[currentLevel].display}!\n${planNote}\n+150 puntos`,
         0x2ecc71,
-        () => this.nextMission()
+        ()=>this.nextLevel()
       );
     });
   }
 
-  /* ────────────────── STOMACHACHE ────────────────── */
+  /* ── STOMACHACHE ──────────────────────────────────────── */
   doStomachache() {
     if (this.panelOpen) return;
-    this.gamePaused = true;
-    this.panelOpen  = true;
-    playSound('ouch');
+    this.paused=true; this.panelOpen=true;
+    snd('ouch');
 
     this.cameras.main.shake(600, 0.022);
-    this.cameras.main.flash(400, 231, 76, 60, false);
+    this.cameras.main.flash(380, 231, 76, 60, false);
+    this.tweens.add({targets:this.yoshi, angle:9, duration:80, yoyo:true, repeat:5});
 
-    // Yoshi shake tween
-    this.tweens.add({ targets: this.yoshi, angle: 8, duration: 80, yoyo: true, repeat: 5 });
-
-    this.time.delayedCall(750, () => {
-      const m = MISSIONS[currentMissionIndex];
+    this.time.delayedCall(750, ()=>{
+      const lvl = LEVELS[currentLevel];
       this.showPanel(
         '😱 ¡Dolor de Panza!',
-        `Comiste ${this.toFrac(this.currentAmt)} pero necesitabas ${m.display}.\n¡Calcula antes de correr!`,
-        0xe74c3c,
-        () => this.resetMission()
+        `Comiste ${numToStr(this.collected)} pero Yoshi necesitaba ${lvl.display}.\n\n💡 Tip: La próxima vez, planea cuántas piezas son ${lvl.display} ANTES de correr.`,
+        0xe53935,
+        ()=>this.resetLevel()
       );
     });
   }
 
-  resetMission() {
-    this.currentAmt = 0;
-    this.gamePaused = false;
-    this.panelOpen  = false;
-    this.spawnFood();
+  /* ── RESET / NEXT ─────────────────────────────────────── */
+  resetLevel() {
+    this.hidePanel();
+    this.collected = 0;
+    this.paused    = false;
+    this.panelOpen = false;
+    this.yoshi.setPosition(YOSHI_START_X, YOSHI_START_Y);
+    this.yoshi.setVelocity(0,0);
+    this.tweens.add({targets:this.nestArrow, alpha:0, duration:200});
+    this.spawnFood(LEVELS[currentLevel]);
     this.refreshHUD();
-    this.hidePanel();
   }
 
-  nextMission() {
-    currentMissionIndex = (currentMissionIndex + 1) % MISSIONS.length;
+  nextLevel() {
     this.hidePanel();
-    this.gamePaused = true;
-    showThinkPanel(currentMissionIndex);
+    this.paused = true;
+    currentLevel = (currentLevel + 1) % LEVELS.length;
+    showOverlay(currentLevel);
   }
 
-  /* ────────────────── IN-GAME PANEL ────────────────── */
-  showPanel(title, body, color, onContinue) {
+  /* ── IN-GAME PANEL ────────────────────────────────────── */
+  showPanel(title, body, color, cb) {
     if (this.panel) this.panel.destroy();
 
-    const depth = 60;
-    const c = this.add.container(GW / 2, GH / 2 - 20).setDepth(depth);
-
-    const bg = this.add.graphics();
-    bg.fillStyle(0x000000, 0.88);
-    bg.fillRoundedRect(-164, -145, 328, 290, 22);
+    const c   = this.add.container(GW/2, GH/2-20).setDepth(60);
+    const bg  = this.add.graphics();
+    bg.fillStyle(0x000000, 0.9);
+    bg.fillRoundedRect(-170,-155,340,310,22);
     bg.lineStyle(3, color, 1);
-    bg.strokeRoundedRect(-164, -145, 328, 290, 22);
+    bg.strokeRoundedRect(-170,-155,340,310,22);
 
-    const tTitle = this.add.text(0, -105, title, {
-      fontSize: '27px', color: Phaser.Display.Color.RGBToString(
-        (color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff
-      ),
-      fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 4,
-      align: 'center', wordWrap: { width: 290 }
+    const hexStr = '#' + color.toString(16).padStart(6,'0');
+    const tt = this.add.text(0,-112, title, {
+      fontSize:'26px', color:hexStr, fontFamily:'Fredoka One',
+      stroke:'#000', strokeThickness:4, align:'center', wordWrap:{width:300}
     }).setOrigin(0.5);
 
-    const tBody = this.add.text(0, -22, body, {
-      fontSize: '17px', color: '#fff', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3,
-      align: 'center', wordWrap: { width: 290 }, lineSpacing: 6
+    const bt = this.add.text(0,-28, body, {
+      fontSize:'16px', color:'#fff', fontFamily:'Fredoka One',
+      stroke:'#000', strokeThickness:3, align:'center', wordWrap:{width:300}, lineSpacing:6
     }).setOrigin(0.5);
 
-    const btnBg = this.add.graphics();
-    btnBg.fillStyle(color, 1);
-    btnBg.fillRoundedRect(-88, 82, 176, 52, 26);
+    const bBg = this.add.graphics();
+    bBg.fillStyle(color, 1);
+    bBg.fillRoundedRect(-88,96,176,52,26);
 
-    const btnTxt = this.add.text(0, 108, '¡Continuar! 🎮', {
-      fontSize: '21px', color: '#fff', fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 3
+    const bTxt = this.add.text(0,122,'¡Continuar! 🎮',{
+      fontSize:'21px', color:'#fff', fontFamily:'Fredoka One', stroke:'#000', strokeThickness:3
     }).setOrigin(0.5);
 
-    const zone = this.add.zone(0, 108, 176, 52).setInteractive();
-    zone.on('pointerdown', () => { if (onContinue) onContinue(); });
+    const zone = this.add.zone(0,122,176,52).setInteractive();
+    zone.on('pointerdown', ()=>{ if(cb) cb(); });
 
-    c.add([bg, tTitle, tBody, btnBg, btnTxt, zone]);
+    c.add([bg,tt,bt,bBg,bTxt,zone]);
     c.setScale(0.1);
-    this.tweens.add({ targets: c, scaleX: 1, scaleY: 1, duration: 280, ease: 'Back.Out' });
-
+    this.tweens.add({targets:c, scaleX:1, scaleY:1, duration:260, ease:'Back.Out'});
     this.panel = c;
   }
 
   hidePanel() {
     if (!this.panel) return;
     this.tweens.add({
-      targets: this.panel, scaleX: 0.1, scaleY: 0.1, duration: 200,
-      onComplete: () => { if (this.panel) { this.panel.destroy(); this.panel = null; } }
+      targets:this.panel, scaleX:0.1, scaleY:0.1, duration:180,
+      onComplete:()=>{ this.panel?.destroy(); this.panel=null; }
     });
   }
 
-  /* ────────────────── HELPERS ────────────────── */
-  burstAt(x, y, texture, tint) {
-    const em = this.add.particles(x, y, texture, {
-      speed: { min: 55, max: 140 },
-      scale: { start: 0.9, end: 0 },
-      lifespan: 380,
-      quantity: 10,
-      angle: { min: 0, max: 360 },
-      tint: [tint, 0x2ecc71, 0xffffff]
+  /* ── HELPERS ──────────────────────────────────────────── */
+  burstAt(x,y,tex,tint) {
+    const em = this.add.particles(x,y,tex,{
+      speed:{min:50,max:140}, scale:{start:0.9,end:0},
+      lifespan:360, quantity:10, angle:{min:0,max:360},
+      tint:[tint,0x2ecc71,0xffffff]
     });
-    this.time.delayedCall(450, () => em.destroy());
+    this.time.delayedCall(420,()=>em.destroy());
   }
-
-  floatText(x, y, msg, color) {
-    const t = this.add.text(x, y, msg, {
-      fontSize: '24px', color, fontFamily: 'Fredoka One',
-      stroke: '#000', strokeThickness: 4
+  floatText(x,y,msg,col) {
+    const t = this.add.text(x,y,msg,{
+      fontSize:'24px',color:col,fontFamily:'Fredoka One',stroke:'#000',strokeThickness:4
     }).setOrigin(0.5).setDepth(40);
-    this.tweens.add({
-      targets: t, y: y - 68, alpha: 0, duration: 950, ease: 'Power2',
-      onComplete: () => t.destroy()
-    });
+    this.tweens.add({targets:t,y:y-72,alpha:0,duration:900,ease:'Power2',onComplete:()=>t.destroy()});
   }
 
-  /* ────────────────── UPDATE LOOP ────────────────── */
-  update() {
-    if (this.gamePaused) {
-      this.yoshi.setVelocity(0, 0);
-      this.yoshi.anims.play('idle', true);
+  /* ── UPDATE ───────────────────────────────────────────── */
+  update(time, delta) {
+    // Nest glow animation
+    if (this.nestGlowTarget !== undefined) {
+      this.nestGlowAlpha += (this.nestGlowTarget - this.nestGlowAlpha) * 0.1;
+      const pulse = Math.sin(time / 300) * 0.3 + 0.7;
+      const a = this.nestGlowAlpha * pulse;
+      this.nestGlow.clear();
+      if (a > 0.05) {
+        this.nestGlow.lineStyle(5, 0x69f0ae, a * 0.7);
+        this.nestGlow.strokeCircle(NEST_X, NEST_Y, 70);
+        this.nestGlow.lineStyle(3, 0x69f0ae, a * 0.4);
+        this.nestGlow.strokeCircle(NEST_X, NEST_Y, 85);
+      }
+    }
+
+    if (this.paused) {
+      this.yoshi.setVelocity(0,0);
+      this.yoshi.anims.play('idle',true);
       return;
     }
 
-    let vx = 0, vy = 0;
-    const spd = 230;
+    let vx=0, vy=0;
+    const spd=235;
 
-    // Keyboard
-    if (this.cursors.left.isDown  || this.wasd.left.isDown)  vx = -spd;
-    else if (this.cursors.right.isDown || this.wasd.right.isDown) vx =  spd;
-    if (this.cursors.up.isDown    || this.wasd.up.isDown)    vy = -spd;
-    else if (this.cursors.down.isDown  || this.wasd.down.isDown)  vy =  spd;
+    if (this.cursors.left.isDown  || this.wasd.left.isDown)  vx=-spd;
+    else if(this.cursors.right.isDown||this.wasd.right.isDown) vx=spd;
+    if (this.cursors.up.isDown    || this.wasd.up.isDown)    vy=-spd;
+    else if(this.cursors.down.isDown ||this.wasd.down.isDown)  vy=spd;
 
-    // Joystick
     if (this.joyActive) {
-      const max = 46;
-      vx = (this.joyDX / max) * spd;
-      vy = (this.joyDY / max) * spd;
+      const max=48;
+      vx=(this.joyDX/max)*spd;
+      vy=(this.joyDY/max)*spd;
     }
 
-    this.yoshi.setVelocity(vx, vy);
+    this.yoshi.setVelocity(vx,vy);
+    if      (vx<-8)  this.yoshi.setFlipX(true);
+    else if (vx>8)   this.yoshi.setFlipX(false);
 
-    if (vx < 0) this.yoshi.setFlipX(true);
-    else if (vx > 0) this.yoshi.setFlipX(false);
-
-    if (Math.abs(vx) > 8 || Math.abs(vy) > 8)
-      this.yoshi.anims.play('walk', true);
-    else
-      this.yoshi.anims.play('idle', true);
+    if (Math.abs(vx)>8||Math.abs(vy)>8) this.yoshi.anims.play('walk',true);
+    else                                  this.yoshi.anims.play('idle',true);
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   PHASER INIT
-═══════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   INIT PHASER
+══════════════════════════════════════════════════════════ */
 function initPhaser() {
   gameInstance = new Phaser.Game({
     type: Phaser.AUTO,
     parent: 'game-container',
-    backgroundColor: '#0a1f10',
+    backgroundColor: '#060e08',
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      width: GW,
-      height: GH
+      width: GW, height: GH
     },
-    physics: {
-      default: 'arcade',
-      arcade: { gravity: { y: 0 }, debug: false }
-    },
+    physics: { default:'arcade', arcade:{gravity:{y:0}, debug:false} },
     scene: [BootScene, GameScene]
   });
 }
 
-/* ═══════════════════════════════════════════════════════
-   PAGE LOAD → Show first Think Panel
-═══════════════════════════════════════════════════════ */
-window.addEventListener('load', () => {
-  showThinkPanel(0);
-});
+/* ══════════════════════════════════════════════════════════
+   START
+══════════════════════════════════════════════════════════ */
+window.addEventListener('load', () => showOverlay(0));
 </script>
 </body>
 </html>
