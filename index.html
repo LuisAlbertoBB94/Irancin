@@ -152,11 +152,11 @@
   <div id="vignette"></div>
   <div id="game-container"></div>
 
-  <!-- PANTALLA DE BIENVENIDA (Inicializa AudioContext) -->
+  <!-- PANTALLA DE BIENVENIDA -->
   <div id="welcome">
-    <div style="font-size: 80px; margin-bottom: 10px; text-shadow: 0 10px 30px rgba(0,0,0,0.5);">🦕</div>
+    <div style="font-size: 80px; margin-bottom: 10px; text-shadow: 0 10px 30px rgba(0,0,0,0.5);">🦖</div>
     <h1>YOSHI<br>FRACCIONES</h1>
-    <p>¡Una aventura matemática inmersiva!</p>
+    <p>¡Una aventura matemática 4K inmersiva!</p>
     <button class="btn-massive" onclick="startApp()">JUGAR AHORA</button>
   </div>
 
@@ -202,19 +202,16 @@ function initAudio() {
   if (ac) return;
   ac = new (window.AudioContext || window.webkitAudioContext)();
 
-  // BGM: Drone ambiental hermoso (Sintetizador Pad)
   const masterGain = ac.createGain();
-  masterGain.gain.value = 0.035; // Volumen suave
+  masterGain.gain.value = 0.035; 
   masterGain.connect(ac.destination);
 
-  // Acorde maj9 cálido (C, E, G, B, D) bajado de octavas
   const freqs = [130.81, 164.81, 196.00, 246.94, 293.66];
   freqs.forEach((f, i) => {
     const osc = ac.createOscillator();
     osc.type = i % 2 === 0 ? 'triangle' : 'sine';
     osc.frequency.value = f;
     
-    // LFO para movimiento lento de fase/pitch
     const lfo = ac.createOscillator();
     lfo.type = 'sine';
     lfo.frequency.value = 0.05 + (Math.random() * 0.05);
@@ -224,7 +221,6 @@ function initAudio() {
     lfoGain.connect(osc.detune);
     lfo.start();
     
-    // Paneo suave para estéreo envolvente
     const panner = ac.createStereoPanner();
     panner.pan.value = (Math.random() * 0.6) - 0.3;
     
@@ -233,7 +229,6 @@ function initAudio() {
     osc.start();
   });
 
-  // Generador de SFX
   SFX.play = (type) => {
     if (!ac) return;
     const t = ac.currentTime;
@@ -242,14 +237,12 @@ function initAudio() {
     o.connect(g); g.connect(ac.destination);
 
     if (type === 'tile') {
-      // Sonido tipo marimba de madera
       o.type = 'sine'; o.frequency.setValueAtTime(600, t);
       o.frequency.exponentialRampToValueAtTime(300, t + 0.1);
       g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
       o.start(t); o.stop(t + 0.1);
     } 
     else if (type === 'pop') {
-      // Burbuja suave al recolectar
       o.type = 'sine'; o.frequency.setValueAtTime(400, t);
       o.frequency.exponentialRampToValueAtTime(800, t + 0.1);
       g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
@@ -262,7 +255,6 @@ function initAudio() {
       o.start(t); o.stop(t + 0.3);
     }
     else if (type === 'win') {
-      // Arpegio brillante
       [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
         const o2 = ac.createOscillator(); const g2 = ac.createGain();
         o2.type = 'square'; o2.frequency.value = freq;
@@ -279,18 +271,18 @@ function initAudio() {
 /* ══════════════════════════════════════════════════════════
    2. CONFIGURACIÓN DEL JUEGO Y NIVELES
 ══════════════════════════════════════════════════════════ */
-const GW = 390, GH = 750; // Orientación móvil vertical estricta
+const GW = 390, GH = 750;
 let game = null;
 let currentLvl = 0;
 let planSelected = 0;
 
 const LEVELS = [
   // FASE 1: PROPIAS
-  { phase: 'PROPIAS', tgt: 0.25, lbl: '1/4', pieces: 1, max: 4, e: '😋', txt: 'A Yoshi se le antojó una rebanada. Necesita exactamente UN CUARTO de pizza.', fQ: 4, fH: 0 },
-  { phase: 'PROPIAS', tgt: 0.50, lbl: '1/2', pieces: 2, max: 4, e: '🍕', txt: 'Ahora quiere la MITAD de una pizza entera. ¿Cuántos cuartos forman una mitad?', fQ: 5, fH: 0 },
-  { phase: 'PROPIAS', tgt: 0.75, lbl: '3/4', pieces: 3, max: 4, e: '🦖', txt: '¡Más hambre! Consigue TRES CUARTOS (3/4). Planea las piezas con cuidado.', fQ: 5, fH: 0 },
-  { phase: 'PROPIAS', tgt: 0.50, lbl: '1/2', pieces: 2, max: 4, e: '🍉', txt: '¡Apareció sandía grande (1/2)! Puedes comer una de 1/2 o dos de 1/4. Ambas son válidas.', fQ: 3, fH: 2 },
-  { phase: 'PROPIAS', tgt: 1.00, lbl: '1', pieces: 4, max: 4, e: '🏆', txt: '¡Un entero completo! Llenarás toda tu barra. Combina piezas como quieras para llegar a 1.', fQ: 3, fH: 3 },
+  { phase: 'PROPIAS', tgt: 0.25, lbl: '1/4', pieces: 1, max: 4, e: '😋', txt: 'A Yoshi se le antojó una rebanada. Necesita exactamente UN CUARTO.', fQ: 4, fH: 0 },
+  { phase: 'PROPIAS', tgt: 0.50, lbl: '1/2', pieces: 2, max: 4, e: '🍕', txt: 'Ahora quiere la MITAD. ¿Cuántos cuartos forman una mitad?', fQ: 5, fH: 0 },
+  { phase: 'PROPIAS', tgt: 0.75, lbl: '3/4', pieces: 3, max: 4, e: '🦖', txt: '¡Más hambre! Consigue TRES CUARTOS (3/4).', fQ: 5, fH: 0 },
+  { phase: 'PROPIAS', tgt: 0.50, lbl: '1/2', pieces: 2, max: 4, e: '🍉', txt: '¡Apareció sandía grande (1/2)! Puedes comer una de 1/2 o dos de 1/4.', fQ: 3, fH: 2 },
+  { phase: 'PROPIAS', tgt: 1.00, lbl: '1', pieces: 4, max: 4, e: '🏆', txt: '¡Un entero completo! Llenarás toda tu barra.', fQ: 3, fH: 3 },
   // FASE 2: IMPROPIAS
   { phase: 'IMPROPIAS', tgt: 1.25, lbl: '5/4', pieces: 5, max: 8, e: '🤯', txt: '¡Las fracciones pueden ser mayores a 1! 5/4 significa un entero completo más un cuarto extra.', fQ: 5, fH: 2 },
   { phase: 'IMPROPIAS', tgt: 1.50, lbl: '3/2', pieces: 6, max: 8, e: '🔥', txt: '3/2 es lo mismo que un entero y medio. ¿Cuántos cuartos necesitas para formar esto?', fQ: 4, fH: 3 },
@@ -307,7 +299,7 @@ function startApp() {
   setTimeout(() => {
     document.getElementById('welcome').style.display = 'none';
     if (!game) initPhaser();
-    loadLevelUI();
+    else loadLevelUI();
   }, 800);
 }
 
@@ -330,7 +322,6 @@ function loadLevelUI() {
     ? `¡Requiere MÁS de 1 entero!` 
     : `Exactamente ${lvl.pieces} pieza(s)`;
 
-  // Generar Tiles
   const tc = document.getElementById('tiles-container');
   tc.innerHTML = '';
   for (let i = 0; i < lvl.max; i++) {
@@ -350,7 +341,6 @@ function loadLevelUI() {
 
 function onTileClick(idx, max) {
   SFX.play('tile');
-  // Si tocas el último activo, deselecciona. Si no, selecciona hasta ese.
   if (idx + 1 === planSelected) planSelected = Math.max(0, planSelected - 1);
   else planSelected = Math.min(idx + 1, max);
   
@@ -374,7 +364,6 @@ function updateFeedback() {
     fb.className = 'feedback-msg success'; 
     fb.textContent = `¡EXCELENTE! ${planSelected}/4 es igual a ${lvl.lbl}.`;
     btn.style.display = 'block';
-    // Efecto de pulso en botón
     btn.animate([{transform:'scale(1)'},{transform:'scale(1.05)'},{transform:'scale(1)'}], {duration: 600});
   } else {
     fb.className = 'feedback-msg error';
@@ -392,148 +381,70 @@ function startGameplay() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   4. PHASER 3 - GRÁFICOS Y LÓGICA (La Masterpiece)
+   4. PHASER 3 - GRÁFICOS Y LÓGICA (Asset Loading + Game)
 ══════════════════════════════════════════════════════════ */
 
+// Truco avanzado para cargar imágenes locales sin CORS en HTML nativo
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
+  
+  preload() {
+    this.add.text(GW/2, GH/2, 'Cargando Assets...', { fontFamily: 'Baloo 2', color:'#fff', fontSize:'30px', fontWeight: '800' }).setOrigin(0.5);
+  }
+  
   create() {
-    this.createImmersiveTextures();
-    this.scene.start('Game');
+    // Estas son las imágenes AAA generadas y la foto original del usuario
+    const assets = [
+      { key: 'bg', src: 'bg.png' },
+      { key: 'pizza', src: 'pizza.png' },
+      { key: 'watermelon', src: 'watermelon.png' },
+      { key: 'nest', src: 'nest.png' },
+      { key: 'yoshi', src: 'yoshi.png' }
+    ];
+    let loaded = 0;
+    
+    assets.forEach(a => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous"; // Intento preventivo
+      img.onload = () => {
+        if(!this.textures.exists(a.key)) this.textures.addImage(a.key, img);
+        loaded++;
+        if(loaded === assets.length) this.finishLoading();
+      };
+      img.onerror = () => {
+        console.warn("Faltan assets, dibujando placeholder para: " + a.key);
+        // Fallback procedural en caso de fallo (para evitar pantalla negra total)
+        const g = this.make.graphics({add:false});
+        g.fillStyle(0xffffff, 1); g.fillRect(0,0,64,64);
+        g.generateTexture(a.key, 64, 64); g.destroy();
+        loaded++;
+        if(loaded === assets.length) this.finishLoading();
+      };
+      img.src = a.src;
+    });
   }
 
-  createImmersiveTextures() {
-    // Generador de texturas procedurales de alta calidad.
+  finishLoading() {
+    // Generador de texturas procedurales auxiliares (partículas y luces)
     const mk = (key, w, h, drawFn) => {
-      const g = this.make.graphics({add:false});
-      drawFn(g); g.generateTexture(key, w, h); g.destroy();
+      if(!this.textures.exists(key)){
+        const g = this.make.graphics({add:false});
+        drawFn(g); g.generateTexture(key, w, h); g.destroy();
+      }
     };
-
-    // ── GLOW (Luz Aditiva)
     mk('glow', 128, 128, g => {
-      // Gradiente radial falso usando círculos superpuestos
       for(let i=0; i<32; i++) {
         const alpha = 0.05 * (1 - (i/32));
         g.fillStyle(0xffffff, alpha);
         g.fillCircle(64, 64, 64 - i*2);
       }
     });
-
-    // ── YOSHI PROFESIONAL
-    // Se redibujó cuidadosamente para capturar la esencia con sombreado base
-    const drawYoshi = (g, walking) => {
-      const legOffset = walking ? 8 : 0;
-      
-      // Sombra proyectada
-      g.fillStyle(0x000000, 0.3); g.fillEllipse(50, 92, 60, 12);
-      
-      // Bota Izquierda (Fondo)
-      g.fillStyle(0x8e24aa, 1); g.fillEllipse(30 - legOffset, 80, 26, 16);
-      g.fillStyle(0xab47bc, 1); g.fillEllipse(28 - legOffset, 78, 22, 12); // Brillo
-      
-      // Bota Derecha (Frente)
-      g.fillStyle(0xd32f2f, 1); g.fillEllipse(55 + legOffset, 82, 30, 18);
-      g.fillStyle(0xf44336, 1); g.fillEllipse(53 + legOffset, 79, 24, 14);
-      g.fillStyle(0xffcdd2, 0.4); g.fillEllipse(48 + legOffset, 75, 10, 6); // Reflexión
-      
-      // Cola y Cuerpo Principal (Verde Esmeralda)
-      g.fillStyle(0x1b5e20, 1); g.fillCircle(20, 60, 14); // Borde Cola
-      g.fillStyle(0x2ecc71, 1); g.fillCircle(22, 58, 12); // Centro Cola
-      
-      g.fillStyle(0x1b5e20, 1); g.fillEllipse(48, 52, 50, 44); // Borde Cuerpo
-      g.fillStyle(0x2ecc71, 1); g.fillEllipse(48, 50, 48, 42); // Cuerpo Main
-      
-      // Panza Blanca/Crema
-      g.fillStyle(0xfff9c4, 1); g.fillEllipse(54, 52, 24, 34);
-      
-      // Silla de Montar (Roja)
-      g.fillStyle(0xbf360c, 1); g.fillCircle(30, 32, 8); g.fillCircle(44, 26, 9);
-      g.fillStyle(0xff5722, 1); g.fillCircle(29, 30, 6); g.fillCircle(43, 24, 7);
-      
-      // Cuello
-      g.fillStyle(0x2ecc71, 1); g.fillEllipse(64, 40, 20, 26);
-      
-      // Cabeza Base
-      g.fillStyle(0x1b5e20, 1); g.fillCircle(72, 30, 22);
-      g.fillStyle(0x2ecc71, 1); g.fillCircle(72, 30, 20);
-      
-      // Hocico Grande (Característico)
-      g.fillStyle(0xe65100, 1); g.fillEllipse(94, 38, 28, 20); // Borde/Sombra
-      g.fillStyle(0xffb300, 1); g.fillEllipse(92, 36, 26, 18); // Color Main
-      g.fillStyle(0xffecb3, 0.6); g.fillEllipse(90, 32, 16, 8); // Gran Brillo nariz
-      
-      // Fosas Nasales
-      g.fillStyle(0x3e2723, 1); g.fillCircle(88, 35, 3); g.fillCircle(98, 35, 3);
-      
-      // Ojo Blanco Grande
-      g.fillStyle(0x000000, 1); g.fillEllipse(66, 22, 22, 26); // Borde
-      g.fillStyle(0xffffff, 1); g.fillEllipse(65, 22, 20, 24); // Esclerótica
-      
-      // Pupila (Azul muy oscuro) e Iris
-      g.fillStyle(0x0a0a2a, 1); g.fillEllipse(70, 22, 10, 14);
-      g.fillStyle(0xffffff, 1); g.fillCircle(72, 18, 3.5); // Catchlight primario
-      g.fillStyle(0xffffff, 0.6); g.fillCircle(68, 26, 1.5); // Catchlight secundario
-      
-      // Párpado Verde superpuesto
-      g.fillStyle(0x1b5e20, 1); g.fillEllipse(64, 11, 24, 10);
-      g.fillStyle(0x2ecc71, 1); g.fillEllipse(64, 10, 22, 8);
-      
-      // Bracito frontal
-      g.fillStyle(0x27ae60, 1); g.fillEllipse(62, 58, 12, 6);
-    };
-    mk('yoshi_idle', 110, 100, g => drawYoshi(g, false));
-    mk('yoshi_walk', 110, 100, g => drawYoshi(g, true));
-
-    // ── COMIDA (Altamente Detallada)
-    // 1/4 Pizza
-    mk('food_q', 80, 80, g => {
-      const cx=40, cy=40, r=36;
-      // Borde de Queso/Salsa exterior
-      g.fillStyle(0xc62828, 1);
-      g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,r, Math.PI*1.5, Math.PI*2); g.closePath(); g.fillPath();
-      // Queso principal
-      g.fillStyle(0xffea00, 1);
-      g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,r-4, Math.PI*1.5, Math.PI*2); g.closePath(); g.fillPath();
-      // Pepperonis
-      g.fillStyle(0xd84315, 1); g.fillCircle(cx+16, cy-18, 6); g.fillCircle(cx+26, cy-8, 5); g.fillCircle(cx+8, cy-28, 4);
-      // Highlights
-      g.fillStyle(0xffffff, 0.3);
-      g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,r-10, Math.PI*1.6, Math.PI*1.9); g.closePath(); g.fillPath();
-    });
-    
-    // 1/2 Sandía
-    mk('food_h', 80, 80, g => {
-      const cx=40, cy=55, r=36;
-      g.fillStyle(0x1b5e20, 1); g.beginPath(); g.moveTo(cx-r,cy); g.arc(cx,cy,r, Math.PI, 0); g.closePath(); g.fillPath();
-      g.fillStyle(0xe8f5e9, 1); g.beginPath(); g.moveTo(cx-r+4,cy); g.arc(cx,cy,r-4, Math.PI, 0); g.closePath(); g.fillPath();
-      g.fillStyle(0xe53935, 1); g.beginPath(); g.moveTo(cx-r+7,cy); g.arc(cx,cy,r-7, Math.PI, 0); g.closePath(); g.fillPath();
-      g.fillStyle(0x212121, 1); // Semillas
-      [cx-15, cx, cx+15].forEach(x => g.fillEllipse(x, cy-15, 4, 8));
-      [cx-8, cx+8].forEach(x => g.fillEllipse(x, cy-6, 4, 8));
-      g.fillStyle(0xffffff, 0.25); g.beginPath(); g.moveTo(cx-20,cy); g.arc(cx,cy,20, Math.PI, Math.PI*1.3); g.closePath(); g.fillPath();
-    });
-
-    // ── NIDO (Con luz interna)
-    mk('nest', 140, 100, g => {
-      g.fillStyle(0x000000, 0.4); g.fillEllipse(70, 90, 120, 16); // Sombra
-      g.fillStyle(0x4e342e, 1); g.fillEllipse(70, 75, 110, 34); // Bowl exterior
-      g.fillStyle(0x3e2723, 1); g.fillEllipse(70, 70, 96, 26); // Hueco interior oscuro
-      // Huevos
-      g.fillStyle(0xf1f8e9, 1); g.fillEllipse(60, 50, 20, 26); g.fillEllipse(80, 55, 18, 24);
-      g.fillStyle(0x4caf50, 1); g.fillCircle(60, 45, 4); g.fillCircle(82, 52, 3); // Manchas
-      // Paja delantera
-      g.fillStyle(0x795548, 1);
-      for(let i=0; i<16; i++) { g.fillTriangle(10+i*8, 85, 18+i*8, 85, 14+i*8 + (Math.random()*10-5), 50 + Math.random()*20); }
-    });
-
-    // Partículas
     mk('particle', 16, 16, g => {
       g.fillStyle(0xffffff, 1); g.fillCircle(8, 8, 8);
     });
-    mk('cloud', 200, 80, g => {
-      g.fillStyle(0xffffff, 1);
-      g.fillCircle(50, 40, 30); g.fillCircle(100, 30, 40); g.fillCircle(150, 45, 25);
-    });
+
+    loadLevelUI(); // Carga la UI del primer nivel
+    this.scene.start('Game');
   }
 }
 
@@ -546,102 +457,81 @@ class GameScene extends Phaser.Scene {
     this.createEntities();
     this.setupInput();
 
-    // Estado local
     this.isPaused = true;
     this.collectedVal = 0;
     this.targetVal = 0;
   }
 
   createEnvironment() {
-    // Cielo gradiente (Sunset inmersivo)
-    const sky = this.add.graphics();
-    sky.fillGradientStyle(0x1a2a6c, 0x1a2a6c, 0xb21f1f, 0xfdbb2d, 1);
-    sky.fillRect(0, 0, GW, GH);
-    
-    // Nubes Parallax
-    this.clouds = [];
-    for(let i=0; i<3; i++) {
-      const c = this.add.image(Math.random()*GW, 50 + Math.random()*150, 'cloud')
-        .setAlpha(0.6).setScale(0.5 + Math.random()*0.5);
-      this.clouds.push(c);
-    }
-
-    // Suelo
-    const ground = this.add.graphics();
-    ground.fillGradientStyle(0x1b5e20, 0x1b5e20, 0x0a1c0a, 0x0a1c0a, 1);
-    ground.fillRect(0, 300, GW, GH-300);
-    // Borde de pasto
-    ground.fillStyle(0x2ecc71, 1); ground.fillRect(0, 300, GW, 6);
+    // Fondo AAA 
+    this.add.image(GW/2, GH/2, 'bg').setDisplaySize(GW, GH).setDepth(0);
   }
 
   createHUD() {
-    // Zona Superior (Info)
     const topBar = this.add.graphics().setDepth(100);
-    topBar.fillStyle(0x000000, 0.4); topBar.fillRoundedRect(10, 10, GW-20, 50, 16);
+    topBar.fillStyle(0x000000, 0.6); topBar.fillRoundedRect(10, 10, GW-20, 50, 16);
     
     this.hudGoal = this.add.text(GW/2, 35, 'Meta: 0/4', {
       fontFamily: 'Baloo 2', fontSize: '24px', fontStyle: '800', color: '#ffd740', stroke: '#000', strokeThickness: 4
     }).setOrigin(0.5).setDepth(101);
 
-    // Controles Inferiores Visuales
-    this.add.text(GW/2, GH - 20, 'Arrastra para mover', {
-      fontFamily: 'Baloo 2', fontSize: '14px', color: 'rgba(255,255,255,0.4)'
-    }).setOrigin(0.5).setDepth(10);
+    const botBar = this.add.graphics().setDepth(100);
+    botBar.fillStyle(0x000000, 0.4); botBar.fillRoundedRect(GW/2 - 100, GH - 40, 200, 30, 10);
+    this.add.text(GW/2, GH - 25, 'Arrastra para mover', {
+      fontFamily: 'Baloo 2', fontSize: '14px', fontStyle: '600', color: '#ffffff', stroke: '#000', strokeThickness: 2
+    }).setOrigin(0.5).setDepth(101);
   }
 
   createEntities() {
-    // Nido de Entrega
-    this.nestX = GW/2; this.nestY = 360;
-    this.nest = this.add.image(this.nestX, this.nestY, 'nest').setDepth(20);
+    // Nido (Render AAA)
+    this.nestX = GW/2; this.nestY = 320;
+    this.nest = this.add.image(this.nestX, this.nestY, 'nest').setDisplaySize(160, 140).setDepth(20);
     
-    // Luz volumétrica sobre el nido (invisible al inicio)
-    this.nestLight = this.add.image(this.nestX, this.nestY - 150, 'glow')
-      .setDisplaySize(150, 400).setTint(0x2ecc71).setAlpha(0)
+    // Luz volumétrica
+    this.nestLight = this.add.image(this.nestX, this.nestY - 100, 'glow')
+      .setDisplaySize(180, 400).setTint(0x2ecc71).setAlpha(0)
       .setBlendMode('ADD').setDepth(19);
 
-    // Yoshi
-    this.yoshi = this.physics.add.sprite(GW/2, GH - 150, 'yoshi_idle').setDepth(30).setSize(40, 40).setOffset(35, 50);
-    this.yoshi.setCollideWorldBounds(true);
-    this.physics.world.setBounds(10, 300, GW-20, GH-310);
+    // Yoshi (Imagen Oficial del Usuario)
+    this.yoshi = this.physics.add.sprite(GW/2, GH - 150, 'yoshi').setDepth(30);
+    // Ajustar a un tamaño ideal
+    this.yoshi.setDisplaySize(100, 110);
+    // La hitbox se reduce para ser un punto de colisión muy preciso
+    this.yoshi.setSize(this.yoshi.width * 0.4, this.yoshi.height * 0.4); 
+    this.yoshi.setOffset(this.yoshi.width * 0.3, this.yoshi.height * 0.3);
     
-    // Animación procedural de Yoshi (Bobbing)
+    this.yoshi.setCollideWorldBounds(true);
+    this.physics.world.setBounds(10, 280, GW-20, GH-290);
+    
+    // Animación procedural de Yoshi caminando
     this.yoshiBob = this.tweens.add({
-      targets: this.yoshi, y: '+=6', duration: 150, yoyo: true, repeat: -1, ease: 'Sine.inOut'
+      targets: this.yoshi, y: '+=8', angle: {from:-3, to:3}, duration: 180, yoyo: true, repeat: -1, ease: 'Sine.inOut'
     });
     this.yoshiBob.pause();
 
-    // Partículas de polvo
     this.dustGrp = this.add.particles(0,0,'particle', {
-      scale: {start:0.5, end:0}, alpha: {start:0.4, end:0},
-      lifespan: 400, speed: 20, emitting: false, tint: 0x4caf50
+      scale: {start:0.5, end:0}, alpha: {start:0.5, end:0},
+      lifespan: 400, speed: 20, emitting: false, tint: 0xffffff
     }).setDepth(29);
 
-    // Grupo de comida
     this.foodGroup = this.physics.add.group();
-    
-    // Colisión Core: Yoshi vs Food
     this.physics.add.overlap(this.yoshi, this.foodGroup, this.onCollect, null, this);
   }
 
   setupInput() {
     this.input.addPointer(2);
     
-    // Movimiento con toque
     this.input.on('pointermove', (ptr) => {
       if(this.isPaused || !ptr.isDown) return;
-      // Mover hacia el puntero con suavidad
-      this.physics.moveToObject(this.yoshi, {x: ptr.x, y: ptr.y - 40}, 280);
+      this.physics.moveToObject(this.yoshi, {x: ptr.x, y: ptr.y - 60}, 300);
     });
 
     this.input.on('pointerup', () => {
       this.yoshi.setVelocity(0,0);
     });
-
-    // Teclado backup
     this.keys = this.input.keyboard.createCursorKeys();
   }
 
-  /* ── FLUJO DEL NIVEL ── */
   startLevel(lvlObj, playerPlanQty) {
     this.isPaused = false;
     this.targetVal = lvlObj.tgt;
@@ -651,11 +541,9 @@ class GameScene extends Phaser.Scene {
     this.hudGoal.setColor('#ffd740');
     this.nestLight.setAlpha(0);
 
-    // Reset Yoshi
     this.yoshi.setPosition(GW/2, GH-100);
     this.yoshi.setVelocity(0,0);
     
-    // Limpieza ESTRICTA de comida anterior (Arregla Bug 1)
     if (this.foodObjs) {
       this.foodObjs.forEach(f => {
         if(f.glow) f.glow.destroy();
@@ -664,52 +552,48 @@ class GameScene extends Phaser.Scene {
       });
     }
     this.foodGroup.clear(true, true);
-    this.foodObjs = []; // Array manual para sincronizar gráficos visuales en update() sin containers físicos complejos
+    this.foodObjs = []; 
 
-    // Spawn nuevo
     const spawnFoodObj = (val, tex, labelStr) => {
-      // Intentar spawn lejos de yoshi y nido
       let px, py, valid = false;
       for(let i=0; i<20; i++){
-        px = Phaser.Math.Between(50, GW-50); py = Phaser.Math.Between(450, GH-150);
-        if (Math.hypot(px-this.nestX, py-this.nestY) > 120) { valid = true; break; }
+        px = Phaser.Math.Between(50, GW-50); py = Phaser.Math.Between(420, GH-120);
+        if (Math.hypot(px-this.nestX, py-this.nestY) > 130) { valid = true; break; }
       }
       if(!valid) return;
 
-      // 1. Crear Physics Sprite real
       const bodySprite = this.foodGroup.create(px, py, tex).setAlpha(0);
-      bodySprite.setSize(20, 20); // Hitbox ENANO, requiere mucha precisión (Arregla Bug 2)
+      bodySprite.setSize(20, 20);
       bodySprite.setData('val', val);
       bodySprite.setData('lblStr', labelStr);
       bodySprite.collected = false;
 
-      // 2. Gráficos visuales acoplados
-      const visual = this.add.image(px, py, tex).setDisplaySize(60,60).setDepth(25);
-      const glow = this.add.image(px, py, 'glow').setBlendMode('ADD').setTint(val===0.5?0x2ecc71:0xffd740).setDepth(24).setAlpha(0.4);
-      const lbl = this.add.text(px, py-40, labelStr, { fontFamily:'Baloo 2', fontSize:'18px', fontStyle:'800', stroke:'#000', strokeThickness:4}).setOrigin(0.5).setDepth(26);
+      // Usar los Renders AAA generados
+      const visual = this.add.image(px, py, tex).setDisplaySize(70,70).setDepth(25);
+      // Sombras bajo la comida para maximo profesionalismo
+      const shadow = this.add.ellipse(px, py+35, 40, 10, 0x000000, 0.4).setDepth(23);
+      
+      const glow = this.add.image(px, py, 'glow').setBlendMode('ADD').setTint(val===0.5?0x2ecc71:0xffd740).setDepth(24).setAlpha(0.6);
+      const lbl = this.add.text(px, py-45, labelStr, { fontFamily:'Baloo 2', fontSize:'22px', fontStyle:'800', stroke:'#000', strokeThickness:5}).setOrigin(0.5).setDepth(26);
 
-      // Tween de flotación en el visual
       this.tweens.add({
-        targets: visual, y: py - 12, duration: 1000 + Math.random()*500, yoyo: true, repeat: -1, ease: 'Sine.inOut'
+        targets: [visual, glow, lbl], y: '-=15', duration: 1200 + Math.random()*400, yoyo: true, repeat: -1, ease: 'Sine.inOut'
       });
 
-      this.foodObjs.push({ sprite: bodySprite, visual, glow, lbl, baseX: px, baseY: py });
+      this.foodObjs.push({ sprite: bodySprite, visual, glow, lbl, shadow, baseX: px, baseY: py });
     };
 
-    for(let i=0; i<lvlObj.fQ; i++) spawnFoodObj(0.25, 'food_q', '1/4');
-    for(let i=0; i<lvlObj.fH; i++) spawnFoodObj(0.50, 'food_h', '1/2');
+    for(let i=0; i<lvlObj.fQ; i++) spawnFoodObj(0.25, 'pizza', '1/4');
+    for(let i=0; i<lvlObj.fH; i++) spawnFoodObj(0.50, 'watermelon', '1/2');
     
-    // Zoom in FX
     this.cameras.main.setZoom(1.1);
     this.tweens.add({targets: this.cameras.main, zoom: 1, duration: 600, ease: 'Cubic.out'});
   }
 
-  /* ── COLECCIÓN Y JUICE (Hit-stop, Lengua, Sparks) ── */
   onCollect(yoshi, bodySprite) {
     if (this.isPaused || bodySprite.collected) return;
-    bodySprite.collected = true; // Prevenir multi-colisión
+    bodySprite.collected = true; 
     
-    // Encontrar objetos visuales asociados
     const fObj = this.foodObjs.find(o => o.sprite === bodySprite);
     if (!fObj) return;
 
@@ -718,52 +602,45 @@ class GameScene extends Phaser.Scene {
     this.yoshiBob.pause();
     
     SFX.play('pop');
-    
-    // Time stop / Screen shake suave
     this.cameras.main.shake(80, 0.005);
 
-    // Animación de Lengua (Juice puro)
     const tongue = this.add.graphics().setDepth(28);
-    const yx = yoshi.x + (yoshi.flipX ? -25 : 25);
-    const yy = yoshi.y - 15;
+    // IMPORTANTE: Dado que yoshi mira a la izquierda nativamente:
+    // Si flipX es false, mira a la IZQUIERDA. Si flipX es true, mira a la DERECHA.
+    const mouthX = yoshi.x + (yoshi.flipX ? 25 : -25);
+    const mouthY = yoshi.y - 15;
     
     this.tweens.addCounter({
       from: 0, to: 1, duration: 50,
       onUpdate: (tw) => {
         tongue.clear(); tongue.lineStyle(8, 0xff5252, 1);
-        tongue.strokeLineShape(new Phaser.Geom.Line(yx, yy, 
-          Phaser.Math.Linear(yx, fObj.visual.x, tw.getValue()), 
-          Phaser.Math.Linear(yy, fObj.visual.y, tw.getValue())
+        tongue.strokeLineShape(new Phaser.Geom.Line(mouthX, mouthY, 
+          Phaser.Math.Linear(mouthX, fObj.visual.x, tw.getValue()), 
+          Phaser.Math.Linear(mouthY, fObj.visual.y, tw.getValue())
         ));
       },
       onComplete: () => {
-        // Eliminar Visuales
-        fObj.visual.destroy(); fObj.glow.destroy(); fObj.lbl.destroy();
+        fObj.visual.destroy(); fObj.glow.destroy(); fObj.lbl.destroy(); fObj.shadow.destroy();
         bodySprite.destroy();
         
-        // Texto Flotante
-        const ft = this.add.text(yx, yy-30, `+${bodySprite.getData('lblStr')}`, {fontFamily:'Baloo 2', fontSize:'24px', color:'#2ecc71', fontStyle:'800', stroke:'#000', strokeThickness:5}).setOrigin(0.5).setDepth(50);
-        this.tweens.add({targets: ft, y: yy-80, alpha: 0, duration: 800, onComplete:()=>ft.destroy()});
+        const ft = this.add.text(mouthX, mouthY-30, `+${bodySprite.getData('lblStr')}`, {fontFamily:'Baloo 2', fontSize:'30px', color:'#2ecc71', fontStyle:'800', stroke:'#000', strokeThickness:6}).setOrigin(0.5).setDepth(50);
+        this.tweens.add({targets: ft, y: mouthY-90, alpha: 0, duration: 800, onComplete:()=>ft.destroy()});
         
-        // Sparks
-        const sp = this.add.particles(yx, yy, 'particle', { speed: 80, scale: {start:0.5, end:0}, lifespan: 300, quantity: 8, tint: 0xffd740 }).setDepth(40);
+        const sp = this.add.particles(mouthX, mouthY, 'particle', { speed: 100, scale: {start:0.6, end:0}, lifespan: 300, quantity: 12, tint: 0xffd740 }).setDepth(40);
         this.time.delayedCall(400, () => sp.destroy());
 
-        // Retraer lengua
         this.tweens.addCounter({
           from: 1, to: 0, duration: 50,
           onUpdate: (tw) => {
             tongue.clear(); tongue.lineStyle(8, 0xff5252, 1);
-            tongue.strokeLineShape(new Phaser.Geom.Line(yx, yy, 
-              Phaser.Math.Linear(yx, fObj.baseX, tw.getValue()), 
-              Phaser.Math.Linear(yy, fObj.baseY, tw.getValue())
+            tongue.strokeLineShape(new Phaser.Geom.Line(mouthX, mouthY, 
+              Phaser.Math.Linear(mouthX, fObj.baseX, tw.getValue()), 
+              Phaser.Math.Linear(mouthY, fObj.baseY, tw.getValue())
             ));
           },
           onComplete: () => {
             tongue.destroy();
             this.isPaused = false;
-            
-            // Lógica Matemática
             this.collectedVal = Math.round((this.collectedVal + bodySprite.getData('val')) * 1000) / 1000;
             this.checkStatus();
           }
@@ -778,12 +655,10 @@ class GameScene extends Phaser.Scene {
     this.hudGoal.setText(`Llevas: ${txtC}  |  Meta: ${LEVELS[currentLvl].lbl}`);
 
     if (Math.abs(diff) < 0.001) {
-      // MATCH EXACTO! Encender nido
       this.hudGoal.setColor('#2ecc71');
       this.hudGoal.setText('¡PERFECTO! Llévalo al nido ▲');
-      this.tweens.add({targets: this.nestLight, alpha: 0.8, duration: 400, yoyo: true, repeat: -1});
+      this.tweens.add({targets: this.nestLight, alpha: 0.9, duration: 400, yoyo: true, repeat: -1});
     } else if (diff < 0) {
-      // TE PASASTE
       this.isPaused = true;
       this.yoshi.setVelocity(0,0);
       SFX.play('error');
@@ -792,82 +667,65 @@ class GameScene extends Phaser.Scene {
       this.hudGoal.setColor('#ff5252');
       this.hudGoal.setText('¡Te pasaste! Dolor de panza 🤢');
       
-      this.time.delayedCall(1500, () => {
-        // Reiniciar nivel
-        this.startLevel(LEVELS[currentLvl], planSelected);
-      });
+      this.time.delayedCall(1500, () => this.startLevel(LEVELS[currentLvl], planSelected));
     }
   }
 
-  /* ── UPDATE LOOP ── */
   update() {
-    // Scroll Nubes
-    this.clouds.forEach(c => {
-      c.x -= 0.2;
-      if(c.x < -100) c.x = GW + 100;
-    });
-
     if (this.isPaused) {
-      this.yoshi.setTexture('yoshi_idle');
+      this.yoshiBob.pause();
+      this.yoshi.angle = 0;
       return;
     }
 
-    // Teclado fallback
-    if(this.keys.left.isDown) this.yoshi.setVelocityX(-200);
-    else if(this.keys.right.isDown) this.yoshi.setVelocityX(200);
-    if(this.keys.up.isDown) this.yoshi.setVelocityY(-200);
-    else if(this.keys.down.isDown) this.yoshi.setVelocityY(200);
+    if(this.keys.left.isDown) this.yoshi.setVelocityX(-250);
+    else if(this.keys.right.isDown) this.yoshi.setVelocityX(250);
+    if(this.keys.up.isDown) this.yoshi.setVelocityY(-250);
+    else if(this.keys.down.isDown) this.yoshi.setVelocityY(250);
 
     const speed = Math.hypot(this.yoshi.body.velocity.x, this.yoshi.body.velocity.y);
     
-    // Orientación
-    if (this.yoshi.body.velocity.x < -10) this.yoshi.setFlipX(true);
-    else if (this.yoshi.body.velocity.x > 10) this.yoshi.setFlipX(false);
+    // YOSHI CORRECCIÓN DE DIRECCIÓN (La imagen original mira a la izquierda)
+    if (this.yoshi.body.velocity.x < -10) this.yoshi.setFlipX(false);
+    else if (this.yoshi.body.velocity.x > 10) this.yoshi.setFlipX(true);
 
-    // Animación de Caminata
     if (speed > 10) {
-      this.yoshi.setTexture('yoshi_walk');
       if(!this.yoshiBob.isPlaying()) this.yoshiBob.resume();
-      this.dustGrp.emitParticleAt(this.yoshi.x, this.yoshi.y + 15);
+      this.dustGrp.emitParticleAt(this.yoshi.x, this.yoshi.y + 40);
     } else {
-      this.yoshi.setTexture('yoshi_idle');
       this.yoshiBob.pause();
+      this.yoshi.angle = 0;
+      this.yoshi.y = Phaser.Math.Linear(this.yoshi.y, this.yoshi.body.y + 50, 0.1);
     }
 
-    // Sincronizar gráficos de comida activos
     this.foodObjs.forEach(f => {
       if(f.sprite.active) {
-        f.glow.setPosition(f.visual.x, f.visual.y);
-        f.lbl.setPosition(f.visual.x, f.visual.y - 40);
+        f.sprite.setPosition(f.visual.x, f.visual.y); // Acoplar hitbox a visual
       }
     });
 
-    // Validar entrega en el Nido
     if (Math.abs(this.targetVal - this.collectedVal) < 0.001) {
       const distToNest = Math.hypot(this.yoshi.x - this.nestX, this.yoshi.y - this.nestY);
-      if (distToNest < 60) {
-        this.winLevel();
-      }
+      if (distToNest < 80) this.winLevel();
     }
   }
 
   winLevel() {
     this.isPaused = true;
     this.yoshi.setVelocity(0,0);
+    this.yoshi.angle = 0;
     SFX.play('win');
     
-    // Destello verde intenso
     this.cameras.main.flash(400, 46, 204, 113);
     this.hudGoal.setText('¡NIVEL COMPLETADO! 🎉');
     
-    // Confetti masivo
     const emit = this.add.particles(GW/2, GH, 'particle', {
-      speed: {min: 300, max: 600}, angle: {min: 240, max: 300},
-      gravityY: 800, scale: {start: 0.8, end: 0}, lifespan: 2000,
-      tint: [0x2ecc71, 0xffd740, 0xff5252, 0x4fc3f7], quantity: 3
+      speed: {min: 300, max: 800}, angle: {min: 240, max: 300},
+      gravityY: 1000, scale: {start: 1, end: 0}, lifespan: 2500,
+      tint: [0x2ecc71, 0xffd740, 0xff5252, 0x4fc3f7], quantity: 4
     }).setDepth(200);
     
-    this.time.delayedCall(500, () => emit.stop());
+    this.time.delayedCall(800, () => emit.stop());
 
     this.time.delayedCall(2500, () => {
       currentLvl = (currentLvl + 1) % LEVELS.length;
